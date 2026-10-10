@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RS KneePro</title>
+<meta name="theme-color" content="#172348">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KneePro">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+/* Layout: navy app bar on top, one scrolling screen per tab, fixed bottom tab bar (iPhone app pattern) */
+:root{
+  --bg:#f3f4f8; --surface:#ffffff; --ink:#151d36; --muted:#5f6883; --line:#dde1eb;
+  --navy:#172348; --navy-ink:#ffffff; --gold:#b8892a; --gold-soft:#f5ecd8;
+  --ok:#2c7a52; --ok-soft:#e3f2ea; --warn:#b2532a; --warn-soft:#fbeadf; --bad:#b33a3a;
+  --font:-apple-system,"SF Arabic","Geeza Pro","Segoe UI",Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0c1120; --surface:#161d31; --ink:#e9ecf4; --muted:#9aa3bb; --line:#283150;
+  --navy:#111a35; --navy-ink:#ffffff; --gold:#dcb462; --gold-soft:#2b2516;
+  --ok:#5ec48f; --ok-soft:#163026; --warn:#ee9a6c; --warn-soft:#35231a; --bad:#ef7b7b;
+  color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.appbar{background:var(--navy);color:var(--navy-ink);padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 14px;position:sticky;top:0;z-index:20}
+.appbar .row{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:720px;margin:0 auto}
+.brand{font-weight:800;font-size:1.15rem;letter-spacing:.02em}
+.brand b{color:var(--gold)}
+.pill{font-size:.78rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px 10px;white-space:nowrap}
+main{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:14px calc(96px + env(safe-area-inset-bottom,0px))}
+h2{font-size:1.25rem;margin:18px 0 6px;text-wrap:balance}
+h3{font-size:.85rem;color:var(--gold);margin:18px 0 8px;letter-spacing:.03em}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stack{display:flex;flex-direction:column;gap:8px}
+.banner{border-radius:12px;padding:12px 14px;font-size:.92rem;margin:10px 0}
+.banner.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.banner.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.banner.info{background:var(--gold-soft);border:1px solid var(--gold)}
+.banner b{display:block;margin-bottom:2px}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:10px;text-align:center;padding:6px 0;font-size:.7rem;line-height:1.4}
+.day b{display:block;font-size:.72rem}
+.day.today{border-color:var(--gold);box-shadow:0 0 0 1.5px var(--gold)}
+.day.did{background:var(--ok-soft);border-color:var(--ok)}
+.progress{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);margin:12px 0 4px;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.ex{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ex.done{opacity:.55}
+.ex input[type=checkbox]{width:24px;height:24px;margin:2px 0 0;accent-color:var(--ok)}
+.ex .nm{font-weight:700}
+.dose{color:var(--gold);font-weight:700;font-size:.88rem;font-variant-numeric:tabular-nums}
+.how{color:var(--muted);font-size:.88rem;margin-top:2px}
+.mis{font-size:.82rem;color:var(--warn);margin-top:3px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;font-size:.85rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--navy-ink)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1405;font-weight:700}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%;justify-content:center;padding:12px;font-size:1rem}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 4px;cursor:pointer;font-size:.9rem}
+.seg button[aria-pressed=true]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+label.f{display:block;font-weight:600;margin:14px 0 6px}
+.painv{font-size:2.2rem;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;line-height:1.1}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+input[type=number],input[type=date],select,textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px}
+textarea{min-height:80px;resize:vertical}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.tile b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;color:var(--navy)}
+@media (prefers-color-scheme: dark){.tile b{color:var(--gold)}}
+.tile span{font-size:.75rem;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;font-size:.8rem;font-variant-numeric:tabular-nums}
+.cal .h{color:var(--muted);font-size:.7rem}
+.cal .c{aspect-ratio:1;max-width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;background:var(--surface);border:1px solid var(--line);position:relative}
+.cal .c.w{background:var(--ok);color:#fff;border-color:var(--ok)}
+.cal .c.t{box-shadow:0 0 0 2px var(--gold)}
+.cal .c i{width:5px;height:5px;border-radius:50%;background:var(--gold);position:absolute;bottom:4px}
+.calnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.crit{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.crit:last-child{border-bottom:0}
+.crit .s{flex:0 0 24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800}
+.crit .s.y{background:var(--ok);color:#fff}
+.crit .s.n{background:var(--line);color:var(--muted)}
+.crit input{width:22px;height:22px;accent-color:var(--ok);margin:1px 1px 0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:.88rem}
+.chips button[aria-pressed=true]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.logrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.logrow:last-child{border-bottom:0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.chartbox{overflow-x:auto}
+svg text{font-family:var(--font)}
+ul.rules{padding-inline-start:20px;margin:4px 0}
+ul.rules li{margin:5px 0}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px);z-index:30}
+nav.tabs button{background:none;border:0;padding:8px 0 7px;font-size:.7rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav.tabs button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-selected=true]{color:var(--gold);font-weight:700}
+#timer{position:fixed;left:12px;right:12px;bottom:calc(70px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--navy-ink);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:700px;margin:0 auto}
+#timer .t{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:80px;text-align:center}
+#timer .l{flex:1;min-width:0;font-size:.9rem}
+#timer button{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+#toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:8px 18px;border-radius:999px;font-size:.9rem;z-index:50;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="row">
+    <div class="brand"><b>RS</b> KneePro</div>
+    <div class="pill" id="hdrPill"></div>
+  </div>
+</header>
+
+<main>
+  <section id="v-today"></section>
+  <section id="v-log" hidden></section>
+  <section id="v-progress" hidden></section>
+  <section id="v-library" hidden></section>
+  <section id="v-more" hidden></section>
+</main>
+
+<div id="timer" hidden>
+  <div class="t" id="tNum">0</div>
+  <div class="l" id="tLbl"></div>
+  <button type="button" id="tStop">إيقاف</button>
+</div>
+<div id="toast" hidden></div>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-v="today" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>اليوم</button>
+  <button role="tab" data-v="log" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>التسجيل</button>
+  <button role="tab" data-v="progress" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>التقدم</button>
+  <button role="tab" data-v="library" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 5h6v15H4zM14 5h6v15h-6z"/></svg>التمارين</button>
+  <button role="tab" data-v="more" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>المزيد</button>
+</nav>
+
+<script>
+/* ============ Helpers ============ */
+const AR="٠١٢٣٤٥٦٧٨٩";
+const ar=v=>String(v).replace(/\d/g,d=>AR[d]);
+const pad=n=>String(n).padStart(2,"0");
+const dk=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const yt=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const DSHORT=["أحد","اثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"];
+const WEEK_ORDER=[6,0,1,2,3,4,5];
+const TYPE_LBL={home:"بيت",gym:"جيم",rest:"راحة"};
+const SWELL_LBL=["مفيش","خفيف","واضح"];
+const $=id=>document.getElementById(id);
+
+/* ============ Exercise library ============ */
+const LIB={
+bike:{n:"عجلة ثابتة",how:"الكرسي عالي، بحيث الركبة تبقى شبه مفرودة لما الدواسة تكون تحت. مقاومة خفيفة وسرعة ثابتة.",mis:"الكرسي الواطي بيخلي الركبة تتثني زيادة عن اللزوم.",q:"stationary bike knee rehab seat height"},
+walk:{n:"مشي",how:"على أرض مستوية وبخطوة مريحة. زوّد ٥ دقايق كل أسبوع لو الركبة مرتاحة.",mis:"",q:"walking after meniscus repair"},
+patella:{n:"تحريك صابونة الركبة",how:"الرجل مفرودة ومرتاحة. حرّك الصابونة بصوابعك بالراحة لفوق وتحت ويمين وشمال.",mis:"تضغط جامد، أو تشد عضلة الفخذ وانت بتحركها.",q:"patellar mobilization after knee surgery"},
+heelslide:{n:"سحب الكعب",how:"نايم على ضهرك. اسحب الكعب على السرير ناحيتك ببطء وارجع.",mis:"تجبر الركبة تتثني لحد ما توجعك.",q:"heel slides knee exercise"},
+anklepump:{n:"شد الكاحل",how:"حرّك القدم لفوق ولتحت باستمرار. بيساعد يقلل الورم.",mis:"",q:"ankle pumps exercise"},
+quadset:{n:"شد عضلة الفخذ",how:"حط فوطة ملفوفة تحت الركبة، واضغط عليها بشد الفخذ وثبّت.",mis:"تشد الإلية أو ترفع الكعب بدل ما تشد الفخذ.",q:"quad sets exercise knee"},
+slr:{n:"رفع الرجل مفرودة",how:"شد الفخذ الأول لحد ما الركبة تتفرد، وارفع الرجل لارتفاع الركبة التانية. انزل في ٣ ثواني.",mis:"لو الركبة بتتثني وانت بترفع، يبقى الفخذ لسه ضعيف. قلّل العدد.",q:"straight leg raise knee rehab"},
+slr_w:{n:"رفع الرجل مفرودة بوزن",how:"نفس التمرين، مع وزن كاحل من ٠٫٥ لـ ١ كجم.",mis:"لو الركبة بتتثني، شيل الوزن.",q:"straight leg raise ankle weight"},
+tke:{n:"فرد الركبة بالأستك",how:"اربط أستك ورا الركبة، وابدأ والركبة مثنية بسيط. افردها للآخر وثبّت ثانيتين.",mis:"تزق وسطك لقدام بدل ما تفرد الركبة.",q:"terminal knee extension band"},
+bridge:{n:"الكوبري",how:"نايم على ضهرك والركبتين مثنيين. ارفع وسطك وثبّت ثانيتين.",mis:"تقوّس ضهرك.",q:"glute bridge exercise"},
+sl_bridge:{n:"الكوبري برجل واحدة",how:"الرجل اليمين على الأرض والتانية مفرودة في الهوا. خلي الحوض مستوي.",mis:"الحوض يميل لجنب.",q:"single leg glute bridge"},
+sideabd:{n:"رفع الرجل جانبيًا",how:"نايم على جنبك. ارفع الرجل اللي فوق وهي مفرودة، وصوابع القدم لقدّام.",mis:"لو الصوابع لافة لفوق، الشغل بيروح على عضلة غير المطلوبة.",q:"side lying hip abduction"},
+clam:{n:"الصدفة بالأستك",how:"حط أستك فوق الركبتين، والقدمين لازقين في بعض. افتح الركبة اللي فوق.",mis:"الحوض يلف لورا.",q:"clamshell exercise band"},
+bandwalk:{n:"مشي جانبي بالأستك",how:"أستك حوالين الكاحلين أو فوق الركبتين. انزل نص قعدة خفيفة، وامشي خطوات جانبية صغيرة.",mis:"الركبة تدخل لجوه.",q:"lateral band walk knee"},
+calf:{n:"رفع الكعبين",how:"على الرجلين: اطلع على صوابعك وانزل ببطء.",mis:"",q:"standing calf raises"},
+sl_calf:{n:"رفع الكعب برجل واحدة",how:"على الرجل اليمين بس، وانت ماسك في الحيطة.",mis:"",q:"single leg calf raise"},
+balance:{n:"الاتزان على رجل واحدة",how:"اقف على اليمين والركبة مثنية بسيط. امسك في حاجة لو محتاج.",mis:"تقفل الركبة وهي مفرودة للآخر.",q:"single leg balance knee rehab"},
+balance2:{n:"اتزان متقدم",how:"على رجل واحدة، يا إما مغمض عينك، يا إما واقف على مخدة.",mis:"",q:"single leg balance foam pad"},
+wallsit:{n:"قعدة الحيطة",how:"ضهرك على الحيطة، وانزل لحد ٤٥–٦٠° بس. الركبتين على خط صوابع القدم.",mis:"تنزل لـ ٩٠° أو أكتر.",q:"wall sit partial range knee rehab"},
+boxsquat:{n:"قعدة وقيام من كرسي عالي",how:"كرسي عالي، أو كرسي عادي عليه مخدة. اقعد ببطء، وقوم من غير ما تسند بإيدك. الثني لازم يفضل أقل من ٩٠°.",mis:"الكرسي الواطي معناه قرفصاء عميقة، ودي ممنوعة.",q:"sit to stand exercise knee rehab"},
+stepup:{n:"الطلوع على درجة",how:"اطلع على الدرجة بالرجل اليمين، وانزل بالتانية.",mis:"الركبة تدخل لجوه، أو تزق بالرجل اللي تحت.",q:"step up exercise knee rehab"},
+lat_stepdown:{n:"النزول الجانبي من درجة",how:"اقف باليمين على درجة ١٠–١٥ سم. نزّل الرجل التانية ببطء لحد ما الكعب يلمس الأرض.",mis:"الحوض يقع، أو الركبة تلف لجوه.",q:"lateral step down knee rehab"},
+fwd_stepdown:{n:"النزول الأمامي من درجة",how:"زي النزول الجانبي بس لقدّام. ابدأ بدرجة واطية.",mis:"",q:"forward step down exercise"},
+split:{n:"سبليت سكوات جزئي",how:"رجل قدّام ورجل ورا. انزل ربع المسافة بس وارجع.",mis:"تنزل لتحت خالص، أو الركبة تعدي صوابع القدم كتير.",q:"partial split squat knee rehab"},
+rdl:{n:"رومانيان ديدليفت",how:"بدامبلز خفيفة، والركبة مثنية بسيط. انزل من الحوض والضهر مفرود.",mis:"تقوّس ضهرك.",q:"romanian deadlift dumbbell form"},
+sl_rdl:{n:"ديدليفت برجل واحدة",how:"اقف على اليمين، وميّل لقدّام والرجل التانية رايحة لورا. ابدأ من غير وزن.",mis:"",q:"single leg romanian deadlift"},
+legpress:{n:"ليج بريس",how:"المدى محدد حسب المرحلة. متقفلش الركبة بقوة في آخر الحركة.",mis:"تنزل لحد ما الركبة تقرب من صدرك.",q:"leg press knee rehab limited range"},
+sl_legpress:{n:"ليج بريس برجل واحدة",how:"بالرجل اليمين بس، ونص الوزن تقريبًا.",mis:"",q:"single leg press"},
+legext:{n:"ليج إكستنشن",how:"وزن خفيف وحركة بطيئة، من ٩٠° لحد ٣٠°.",mis:"لو حسيت بوجع جوه المفصل وقّف، واسأل الأخصائي.",q:"leg extension machine form"},
+hamcurl:{n:"ليج كيرل",how:"وزن خفيف جدًا، ومتثنيش الركبة أكتر من ٩٠°.",mis:"اتأكد إن الدكتور موافق على التمرين ده.",q:"seated hamstring curl machine"},
+abd:{n:"جهاز فتح الرجلين",how:"بيقوّي عضلات الحوض اللي بتحمي الركبة.",mis:"",q:"hip abduction machine"},
+add:{n:"جهاز ضم الرجلين",how:"وزن خفيف وحركة متحكم فيها.",mis:"",q:"hip adduction machine"},
+calfm:{n:"رفع الكعبين على الجهاز",how:"ثبّت ثانية وانت فوق.",mis:"",q:"calf raise machine"},
+elliptical:{n:"الإليبتيكال",how:"مقاومة خفيفة لمتوسطة.",mis:"",q:"elliptical knee rehab"},
+ham_st:{n:"إطالة العضلة الخلفية",how:"حط رجلك مفرودة على كرسي، وميّل لقدّام والضهر مفرود.",mis:"",q:"seated hamstring stretch"},
+calf_st:{n:"إطالة السمانة",how:"رجل ورا مفرودة والكعب على الأرض، وميّل ناحية الحيطة.",mis:"",q:"wall calf stretch"},
+quad_st:{n:"إطالة الفخذ الأمامي",how:"نايم على بطنك وفوطة حوالين القدم، اسحب بلطف. وقّف عند أول إحساس بالشد.",mis:"تجبر الركبة تتثني للآخر.",q:"prone quad stretch strap"},
+ice:{n:"ثلج ورفع الرجل",how:"حط فوطة بين الثلج والجلد، وارفع الرجل أعلى من مستوى القلب.",mis:"تحط الثلج على الجلد على طول.",q:"ice and elevation knee swelling"}
+};
+
+/* plan item: [id, dose text, hold/timer seconds] */
+const WARM={
+ home:[["walk","٥ دقايق",300],["patella","دقيقتين",120],["heelslide","٢×١٥",0],["anklepump","٣٠ مرة",0]],
+ gym:[["bike","٨–١٠ دقايق",600],["patella","دقيقتين",120],["heelslide","٢×١٥",0]]
+};
+const COOL=[["ham_st","٣×٣٠ ث",30],["calf_st","٣×٣٠ ث",30],["quad_st","٢×٣٠ ث",30],["ice","١٥ دقيقة (لو فيه ورم)",900]];
+const PHASES={
+1:{name:"تهدئة وتنشيط",goal:"تقليل الورم وتنشيط عضلة الفخذ، من غير ما الخياطة تتعرض لضغط.",
+ home:[["quadset","٣×١٥ · ثبات ٥ ث",5],["slr","٣×١٠",0],["tke","٣×١٥",0],["bridge","٣×١٢",0],["sideabd","٣×١٢",0],["clam","٣×١٥",0],["calf","٣×١٥",0],["balance","٣×٢٠ ث · ماسك حاجة",20]],
+ gym:[["legpress","٣×١٢ · مدى ٠–٦٠° · وزن خفيف",0],["abd","٣×١٥",0],["add","٣×١٥",0],["hamcurl","٣×١٠ · خفيف جدًا",0],["calfm","٣×١٥",0],["slr","٣×١٢",0],["tke","٣×١٥",0],["balance","٣×٢٠ ث",20]]},
+2:{name:"تقوية",goal:"بناء قوة الفخذ والحوض في مدى آمن، والثني أقل من ٩٠°.",
+ home:[["slr_w","٣×١٢",0],["tke","٣×١٥",0],["sl_bridge","٣×١٠",0],["bandwalk","٣×١٠ خطوات لكل اتجاه",0],["wallsit","٤×٣٠ ث · ٤٥–٦٠°",30],["boxsquat","٣×١٢",0],["stepup","٣×١٠ · درجة ١٥ سم",0],["sl_calf","٣×١٢",0],["balance2","٣×٣٠ ث",30]],
+ gym:[["legpress","٣×١٢ · مدى ٠–٩٠°",0],["sl_legpress","٣×١٠",0],["legext","٣×١٢ · ٩٠–٣٠°",0],["hamcurl","٣×١٢",0],["abd","٣×١٥",0],["add","٣×١٥",0],["rdl","٣×١٠",0],["lat_stepdown","٣×٨",0],["calfm","٣×١٥",0]]},
+3:{name:"قوة ووظيفة",goal:"قوة واتزان على رجل واحدة، وتجهيز الركبة للأنشطة العادية.",
+ home:[["sl_bridge","٣×١٥",0],["bandwalk","٣×١٥ خطوة",0],["wallsit","٤×٤٥ ث",45],["stepup","٣×١٢ · درجة ٢٠ سم",0],["fwd_stepdown","٣×١٠",0],["split","٣×١٠ لكل رجل",0],["sl_rdl","٣×١٠",0],["balance2","٣×٤٥ ث",45],["sl_calf","٣×١٥",0]],
+ gym:[["elliptical","١٠–١٥ دقيقة",900],["legpress","٤×١٠ · ٠–٩٠° · وزن أتقل",0],["sl_legpress","٣×١٢",0],["legext","٣×١٢",0],["hamcurl","٣×١٢",0],["rdl","٣×١٠",0],["split","٣×١٠ · بدامبلز",0],["lat_stepdown","٣×١٢",0],["calfm","٣×١٥",0]]}
+};
+const REST=[["walk","٢٠–٣٠ دقيقة",0]];
+
+/* ============ State ============ */
+const KEY="rs-kneepro-v1";
+const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},logs:{},done:{},checks:{}});
+let S;
+try{S=Object.assign(DEF(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=DEF()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+
+/* ============ Domain logic ============ */
+const todayKey=()=>dk(new Date());
+function groupsFor(type,phase){
+  if(type==="rest")return [{t:"نشاط خفيف",id:"rest",items:REST},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
+  return [{t:"إحماء",id:"warm",items:WARM[type]},{t:"التمارين الأساسية · "+(type==="gym"?"جيم":"بيت"),id:"main",items:PHASES[phase][type]},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
+}
+function isWorkout(key){const d=S.done[key];if(!d||d.t==="rest"||!d.total)return false;return Object.values(d.ids||{}).filter(Boolean).length/d.total>=0.7}
+function workoutsSince(start){return Object.keys(S.done).filter(k=>k>=start&&isWorkout(k)).length}
+function streak(){
+  let d=new Date(),n=0;
+  if(!isWorkout(dk(d)))d=addDays(d,-1);
+  for(let i=0;i<120;i++){
+    const k=dk(d);
+    if(isWorkout(k))n++;
+    else if(S.sched[d.getDay()]!=="rest")break;
+    d=addDays(d,-1);
+  }
+  return n;
+}
+function recentLogs(n){return Object.keys(S.logs).sort().reverse().slice(0,n).map(k=>Object.assign({date:k},S.logs[k]))}
+function avgPain(n){const l=recentLogs(n);return l.length?l.reduce((s,x)=>s+x.pain,0)/l.length:null}
+function weekPostOp(){if(!S.surgery)return null;return Math.floor((new Date()-parse(S.surgery))/864e5/7)}
+
+const CRIT={
+1:[
+ {id:"a",auto:true,t:"آخر ٧ تسجيلات: الألم ٣ أو أقل",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.pain<=3)}},
+ {id:"b",auto:true,t:"آخر ٧ تسجيلات: الورم مفيش أو خفيف",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.sw<=1)}},
+ {id:"c",auto:true,t:"١٢ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=12},
+ {id:"d",t:"بتعمل رفع الرجل مفرودة ١٥ مرة، والركبة مفرودة طول الوقت"},
+ {id:"e",t:"الركبة بتتفرد للآخر زي الرجل التانية"},
+ {id:"f",t:"الدكتور أو أخصائي العلاج الطبيعي موافق إنك تنتقل"}],
+2:[
+ {id:"a",auto:true,t:"آخر ٧ تسجيلات: الألم ٢ أو أقل",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.pain<=2)}},
+ {id:"b",auto:true,t:"آخر ٧ تسجيلات: مفيش ورم",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.sw===0)}},
+ {id:"c",auto:true,t:"١٥ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=15},
+ {id:"d",t:"بتنزل من على درجة ١٥ سم بتحكم، والركبة مش بتلف لجوه"},
+ {id:"e",t:"بتعمل قعدة الحيطة ٤٥ ثانية من غير ألم"},
+ {id:"f",t:"الدكتور أو أخصائي العلاج الطبيعي موافق إنك تنتقل"}]
+};
+function critStatus(p){return (CRIT[p]||[]).map(c=>({...c,ok:c.auto?c.f():!!(S.checks[p]&&S.checks[p][c.id])}))}
+
+function loadAdvice(){
+  const l=recentLogs(5), last=l[0];
+  if(!last)return {cls:"info",t:"سجّل حالتك النهارده",d:"التسجيل اليومي بيحدد إذا كان النهارده يوم عادي ولا يوم خفيف، وبيحسب إمتى تنتقل للمرحلة اللي بعدها."};
+  if(l.length>=5&&l.every(x=>x.sw===2))return {cls:"warn",t:"الورم مستمر بقاله ٥ تسجيلات",d:"كلّم الدكتور قبل ما تكمّل بنفس الحِمل. لحد ما تكلمه، اعمل التمارين الخفيفة بس، وخلّي الثلج إجباري."};
+  if(last.pain>=5||last.sw===2)return {cls:"warn",t:"النهارده يوم خفيف",d:"آخر تسجيل كان فيه ألم أو ورم واضح. اعمل مجموعتين بدل ٣، ومتزودش أي وزن، وخلّي الثلج إجباري."};
+  if(l.length>=3&&l[0].pain>l[2].pain+1)return {cls:"warn",t:"الألم بيزيد",d:"الألم زاد في آخر ٣ تسجيلات. ثبّت الحِمل ومتزودش حاجة الأسبوع ده."};
+  return {cls:"ok",t:"يوم عادي",d:"كمّل البرنامج. لو عدّى أسبوع من غير ورم، زوّد خطوة واحدة بس: تكرارات أكتر، أو وزن أكتر بحوالي ١٠٪."};
+}
+
+/* ============ Timer ============ */
+let tInt=null,tEnd=0,actx=null,wl=null;
+function beep(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(o=>{const g=actx.createGain(),os=actx.createOscillator();os.frequency.value=880;os.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.25,actx.currentTime+o);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+o+.2);os.start(actx.currentTime+o);os.stop(actx.currentTime+o+.21)})}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+function fmt(s){return s>=60?ar(Math.floor(s/60))+":"+ar(pad(s%60)):ar(s)}
+function startTimer(sec,label){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume&&actx.resume()}catch(e){}
+  try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>wl=l).catch(()=>{})}catch(e){}
+  clearInterval(tInt);tEnd=Date.now()+sec*1000;$("tLbl").textContent=label;$("timer").hidden=false;
+  const tick=()=>{const left=Math.max(0,Math.ceil((tEnd-Date.now())/1000));$("tNum").textContent=fmt(left);
+    if(left<=0){clearInterval(tInt);beep();$("tLbl").textContent=label+" · خلص ✓";setTimeout(()=>{if(Date.now()>=tEnd)stopTimer()},4000)}};
+  tick();tInt=setInterval(tick,250);
+}
+function stopTimer(){clearInterval(tInt);$("timer").hidden=true;try{wl&&wl.release();wl=null}catch(e){}}
+$("tStop").onclick=stopTimer;
+let toastT;function toast(m){$("toast").textContent=m;$("toast").hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>$("toast").hidden=true,1800)}
+
+/* ============ Views ============ */
+function exCard(it,interactive,doneMap){
+  const [id,dose,hold]=it,x=LIB[id],c=interactive&&doneMap[id];
+  const timerLbl=hold>=60?"⏱ "+ar(Math.round(hold/60))+" د":"⏱ "+ar(hold)+" ث";
+  return `<div class="ex${c?" done":""}">
+    ${interactive?`<input type="checkbox" data-ex="${id}" ${c?"checked":""} aria-label="${esc(x.n)}">`:`<span></span>`}
+    <div><div class="nm">${x.n}</div><div class="dose">${dose}</div><div class="how">${x.how}</div>
+    ${x.mis?`<div class="mis">⚠ ${x.mis}</div>`:""}
+    <div class="acts">${hold?`<button class="btn" type="button" data-timer="${hold}" data-lbl="${esc(x.n)}">${timerLbl}</button>`:""}
+    ${interactive&&!hold?`<button class="btn" type="button" data-timer="60" data-lbl="راحة بين المجموعات">⏱ راحة ٦٠ ث</button>`:""}
+    <a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ فيديو</a></div></div></div>`;
+}
+function renderHeader(){
+  const w=weekPostOp();
+  $("hdrPill").textContent="المرحلة "+ar(S.phase)+(w!==null?" · الأسبوع "+ar(w)+" بعد العملية":"");
+}
+function renderToday(){
+  const now=new Date(),k=todayKey(),dow=now.getDay(),type=S.sched[dow];
+  const groups=groupsFor(type,S.phase);
+  const all=groups.flatMap(g=>g.items.map(i=>i[0]));
+  const uniq=[...new Set(all)];
+  if(!S.done[k]||S.done[k].t!==type)S.done[k]={t:type,ids:(S.done[k]&&S.done[k].ids)||{},total:uniq.length};
+  S.done[k].total=uniq.length;
+  const dm=S.done[k].ids,n=uniq.filter(i=>dm[i]).length;
+  const adv=loadAdvice(),logged=!!S.logs[k];
+  const weekStart=addDays(now,-((dow+1)%7));
+  const week=WEEK_ORDER.map((d,i)=>{const day=addDays(weekStart,i),kk=dk(day);
+    return `<div class="day${d===dow?" today":""}${isWorkout(kk)?" did":""}"><b>${DSHORT[d]}</b>${TYPE_LBL[S.sched[d]]}</div>`}).join("");
+  $("v-today").innerHTML=`
+   <h2>${DAYS[dow]} · ${type==="rest"?"يوم راحة":"تمرين "+TYPE_LBL[type]}</h2>
+   <div class="muted small">المرحلة ${ar(S.phase)}: ${PHASES[S.phase].name}</div>
+   <div class="banner ${adv.cls}"><b>${adv.t}</b>${adv.d}${!logged?`<div class="acts"><button class="btn primary" type="button" data-go="log">سجّل حالة النهارده</button></div>`:""}</div>
+   <div class="week">${week}</div>
+   <div class="progress"><span>${ar(n)}/${ar(uniq.length)} تمرين</span><div class="bar"><i style="width:${uniq.length?n/uniq.length*100:0}%"></i></div></div>
+   ${n===uniq.length&&n>0?`<div class="banner ok"><b>برافو، خلصت تمرين النهارده ✓</b>متنساش تسجّل حالتك بالليل، أو بكرة الصبح.</div>`:""}
+   ${groups.map(g=>`<h3>${g.t}</h3><div class="stack">${g.items.map(it=>exCard(it,true,dm)).join("")}</div>`).join("")}
+   <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="clearToday">مسح علامات النهارده</button></div>`;
+  save();
+}
+let logDate=todayKey();
+function renderLog(){
+  const L=S.logs[logDate]||{pain:2,sw:0,flex:"",ext:1,note:""};
+  const logs=recentLogs(60);
+  $("v-log").innerHTML=`
+   <h2>تسجيل الحالة</h2>
+   <p class="muted small">سجّل مرة في اليوم، ويفضّل الصبح. حالة الركبة الصبح بتوريك إذا كان تمرين امبارح كان كتير عليها.</p>
+   <div class="card">
+    <label class="f" for="lgDate">التاريخ</label><input type="date" id="lgDate" value="${logDate}" max="${todayKey()}">
+    <label class="f" for="lgPain">الألم</label>
+    <div class="painv" id="painV">${ar(L.pain)}</div>
+    <input type="range" id="lgPain" min="0" max="10" step="1" value="${L.pain}">
+    <div class="scale"><span>٠ مفيش</span><span>٥ متوسط</span><span>١٠ شديد</span></div>
+    <label class="f">الورم</label>
+    <div class="seg" id="lgSw">${SWELL_LBL.map((t,i)=>`<button type="button" data-v="${i}" aria-pressed="${L.sw===i}">${t}</button>`).join("")}</div>
+    <label class="f">فرد الركبة</label>
+    <div class="seg two" id="lgExt"><button type="button" data-v="1" aria-pressed="${L.ext===1}">بتتفرد للآخر</button><button type="button" data-v="0" aria-pressed="${L.ext===0}">ناقصة شوية</button></div>
+    <label class="f" for="lgFlex">ثني الركبة بالدرجات (اختياري)</label>
+    <input type="number" id="lgFlex" inputmode="numeric" min="0" max="160" placeholder="مثلًا ١٢٠" value="${esc(L.flex)}">
+    <div class="muted small">تقدر تقيسه بتطبيق قياس زاوية، أو اسأل الأخصائي يقيسه في الجلسة.</div>
+    <label class="f" for="lgNote">ملاحظات</label>
+    <textarea id="lgNote" placeholder="مثلًا: وجع بعد السلم، طقطقة، نمت كويس...">${esc(L.note)}</textarea>
+    <div style="margin-top:14px"><button class="btn gold block" type="button" id="lgSave">حفظ التسجيل</button></div>
+   </div>
+   <h3>الألم والورم · آخر ٣٠ يوم</h3>
+   <div class="card chartbox">${chart()}</div>
+   <h3>آخر التسجيلات</h3>
+   <div class="card">${logs.length?logs.slice(0,20).map(x=>`<div class="logrow"><span class="muted">${ar(x.date.slice(5).replace("-","/"))}</span>
+     <span>ألم <b>${ar(x.pain)}</b> · ورم ${SWELL_LBL[x.sw]}${x.flex?` · ثني ${ar(x.flex)}°`:""}${x.note?`<div class="muted small">${esc(x.note)}</div>`:""}</span>
+     <span class="dot" style="background:${x.pain<=3?"var(--ok)":x.pain<=5?"var(--gold)":"var(--bad)"}"></span></div>`).join(""):`<div class="muted">لسه مفيش تسجيلات. أول تسجيل هيظهر هنا.</div>`}</div>`;
+  const ls=$("lgSw"),le=$("lgExt");
+  const st={sw:L.sw,ext:L.ext};
+  ls.onclick=e=>{const b=e.target.closest("button");if(!b)return;st.sw=+b.dataset.v;[...ls.children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  le.onclick=e=>{const b=e.target.closest("button");if(!b)return;st.ext=+b.dataset.v;[...le.children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  $("lgPain").oninput=e=>$("painV").textContent=ar(e.target.value);
+  $("lgDate").onchange=e=>{if(e.target.value){logDate=e.target.value;renderLog()}};
+  $("lgSave").onclick=()=>{
+    S.logs[logDate]={pain:+$("lgPain").value,sw:st.sw,ext:st.ext,flex:$("lgFlex").value.trim(),note:$("lgNote").value.trim()};
+    save();toast("اتسجل ✓");renderLog();renderHeader();
+  };
+}
+function chart(){
+  const W=680,H=210,pl=34,pr=10,pt=12,pb=40,days=30,end=new Date();
+  const x=i=>W-pr-(i/(days-1))*(W-pl-pr); // RTL: today on the left? keep chronological left→right
+  const X=i=>pl+(i/(days-1))*(W-pl-pr);
+  const y=v=>pt+(1-v/10)*(H-pt-pb);
+  let grid="",pts=[],dots="",labels="";
+  [0,5,10].forEach(v=>{grid+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${ar(v)}</text>`});
+  for(let i=0;i<days;i++){
+    const d=addDays(end,-(days-1-i)),k=dk(d),l=S.logs[k];
+    if(l){pts.push([X(i),y(l.pain)]);
+      dots+=`<circle cx="${X(i)}" cy="${H-pb+14}" r="5" fill="${l.sw===0?"var(--ok)":l.sw===1?"var(--gold)":"var(--bad)"}"/>`}
+    if(i%7===0||i===days-1)labels+=`<text x="${X(i)}" y="${H-4}" text-anchor="middle" font-size="10" fill="var(--muted)">${ar(d.getDate()+"/"+(d.getMonth()+1))}</text>`;
+  }
+  const path=pts.length>1?`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round"/>`:"";
+  const area=pts.length>1?`<polygon points="${pts[0][0]},${y(0)} ${pts.map(p=>p.join(",")).join(" ")} ${pts[pts.length-1][0]},${y(0)}" fill="var(--gold)" opacity=".12"/>`:"";
+  const pdots=pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===pts.length-1?5:3}" fill="var(--gold)"/>`).join("");
+  const empty=pts.length?"":`<text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="13" fill="var(--muted)">الرسم هيظهر بعد أول تسجيلين</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:320px" role="img" aria-label="رسم الألم والورم">${grid}${area}${path}${pdots}${dots}${labels}${empty}</svg>
+  <div class="small muted" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px"><span>الخط = الألم (٠–١٠)</span><span><span class="dot" style="background:var(--ok)"></span> مفيش ورم</span><span><span class="dot" style="background:var(--gold)"></span> خفيف</span><span><span class="dot" style="background:var(--bad)"></span> واضح</span></div>`;
+}
+let calM=new Date();calM.setDate(1);
+function renderProgress(){
+  const ws=workoutsSince(S.phaseStart),sk=streak(),ap=avgPain(7);
+  const y=calM.getFullYear(),m=calM.getMonth(),first=new Date(y,m,1),dim=new Date(y,m+1,0).getDate();
+  const MONTHS=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  let cells=DSHORT.map(d=>`<div class="h">${d}</div>`).join("");
+  for(let i=0;i<first.getDay();i++)cells+="<div></div>";
+  for(let d=1;d<=dim;d++){const k=dk(new Date(y,m,d));cells+=`<div class="c${isWorkout(k)?" w":""}${k===todayKey()?" t":""}">${ar(d)}${S.logs[k]?"<i></i>":""}</div>`}
+  const cs=critStatus(S.phase),allOk=cs.length&&cs.every(c=>c.ok);
+  $("v-progress").innerHTML=`
+   <h2>التقدم</h2>
+   <div class="tiles">
+    <div class="tile"><b>${ar(ws)}</b><span>يوم تمرين في المرحلة</span></div>
+    <div class="tile"><b>${ar(sk)}</b><span>أيام متتالية</span></div>
+    <div class="tile"><b>${ap===null?"—":ar(ap.toFixed(1))}</b><span>متوسط الألم آخر ٧</span></div>
+   </div>
+   <h3>المرحلة الحالية</h3>
+   <div class="card">
+    <div style="font-weight:800;font-size:1.05rem">المرحلة ${ar(S.phase)}: ${PHASES[S.phase].name}</div>
+    <div class="muted small" style="margin-bottom:6px">${PHASES[S.phase].goal}</div>
+    ${S.phase<3?`<div class="small" style="font-weight:700;margin-top:8px">شروط الانتقال للمرحلة ${ar(S.phase+1)}</div>
+    ${cs.map(c=>c.auto?`<div class="crit"><span class="s ${c.ok?"y":"n"}">${c.ok?"✓":"·"}</span><span>${c.t}<div class="muted small">بيتحسب تلقائيًا</div></span></div>`
+      :`<label class="crit"><input type="checkbox" data-crit="${c.id}" ${c.ok?"checked":""}><span>${c.t}</span></label>`).join("")}
+    <div class="acts"><button class="btn gold" type="button" id="advance" ${allOk?"":"disabled"}>انتقل للمرحلة ${ar(S.phase+1)}</button></div>`
+    :`<div class="banner info"><b>دي آخر مرحلة في البرنامج</b>الرجوع للجري أو القفز أو أي رياضة فيها لف، لازم يكون بإذن الدكتور بعد ما يكشف عليك.</div>`}
+    ${S.phase>1?`<div class="acts"><button class="btn" type="button" id="back">ارجع للمرحلة ${ar(S.phase-1)}</button></div><div class="muted small">لو حصل ورم أو الألم زاد لأكتر من أسبوع، ارجع للمرحلة اللي قبلها.</div>`:""}
+   </div>
+   <h3>التقويم</h3>
+   <div class="card">
+    <div class="calnav"><button class="btn" type="button" id="calPrev">‹ السابق</button><b>${MONTHS[m]} ${ar(y)}</b><button class="btn" type="button" id="calNext">التالي ›</button></div>
+    <div class="cal">${cells}</div>
+    <div class="small muted" style="margin-top:8px">الأخضر = يوم تمرين (خلصت ٧٠٪ أو أكتر) · النقطة = فيه تسجيل حالة</div>
+   </div>`;
+  $("calPrev").onclick=()=>{calM.setMonth(calM.getMonth()-1);renderProgress()};
+  $("calNext").onclick=()=>{calM.setMonth(calM.getMonth()+1);renderProgress()};
+  const adv=$("advance");if(adv)adv.onclick=()=>{S.phase++;S.phaseStart=todayKey();save();toast("انتقلت للمرحلة "+ar(S.phase));renderAll()};
+  const bk=$("back");if(bk)bk.onclick=()=>{if(bk.dataset.c){S.phase--;S.phaseStart=todayKey();save();renderAll()}else{bk.dataset.c=1;bk.textContent="اضغط تاني للتأكيد"}};
+  $("v-progress").querySelectorAll("[data-crit]").forEach(cb=>cb.onchange=()=>{S.checks[S.phase]=S.checks[S.phase]||{};S.checks[S.phase][cb.dataset.crit]=cb.checked;save();renderProgress()});
+}
+let libF=0;
+function renderLibrary(){
+  const sets=[];
+  const add=(arr,tag)=>arr.forEach(i=>sets.push([i,tag]));
+  const ph=libF===0?[1,2,3]:[libF];
+  const seen={},rows=[];
+  const pushList=(t,items)=>{const list=items.filter(i=>!seen[t+i[0]]&&(seen[t+i[0]]=1));if(list.length)rows.push(`<h3>${t}</h3><div class="stack">${list.map(i=>exCard(i,false,{})).join("")}</div>`)};
+  pushList("إحماء",[...WARM.home,...WARM.gym]);
+  ph.forEach(p=>{pushList("المرحلة "+ar(p)+" · بيت",PHASES[p].home);pushList("المرحلة "+ar(p)+" · جيم",PHASES[p].gym)});
+  pushList("إطالة وتهدئة",COOL);
+  $("v-library").innerHTML=`<h2>مكتبة التمارين</h2>
+   <div class="chips" id="libChips">${["الكل","مرحلة ١","مرحلة ٢","مرحلة ٣"].map((t,i)=>`<button type="button" data-f="${i}" aria-pressed="${libF===i}">${t}</button>`).join("")}</div>
+   ${rows.join("")}`;
+  $("libChips").onclick=e=>{const b=e.target.closest("button");if(b){libF=+b.dataset.f;renderLibrary()}};
+}
+function renderMore(){
+  $("v-more").innerHTML=`
+   <h2>الإعدادات والمعلومات</h2>
+   <h3>تاريخ العملية</h3>
+   <div class="card"><input type="date" id="surg" value="${S.surgery}" max="${todayKey()}"><div class="muted small" style="margin-top:6px">بيظهر رقم الأسبوع بعد العملية في أعلى الشاشة.</div></div>
+   <h3>جدول الأسبوع</h3>
+   <div class="card stack">${WEEK_ORDER.map(d=>`<div style="display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center"><span>${DAYS[d]}</span>
+     <select data-sd="${d}" aria-label="${DAYS[d]}">${["home","gym","rest"].map(t=>`<option value="${t}" ${S.sched[d]===t?"selected":""}>${t==="home"?"تمرين بيت":t==="gym"?"تمرين جيم":"راحة + مشي"}</option>`).join("")}</select></div>`).join("")}</div>
+   <h3>وقّف فورًا وكلّم الدكتور لو</h3>
+   <div class="card"><ul class="rules">
+    <li>الركبة قفلت أو اتزنقت، ومش عارف تفردها.</li>
+    <li>حسيت إن الركبة خانتك أو فلتت منك.</li>
+    <li>ظهر ورم جديد، أو سخونة واحمرار.</li>
+    <li>حسيت بوجع حاد على خط المفصل (جنب الركبة من جوه أو من برا) مع طقطقة بتوجع.</li>
+    <li>الورم مستمر أكتر من أسبوع رغم الراحة والثلج.</li></ul></div>
+   <h3>قواعد زيادة الحِمل</h3>
+   <div class="card"><ul class="rules">
+    <li>الألم أثناء التمرين لازم يفضل ٣ من ١٠ أو أقل.</li>
+    <li>لو الركبة تاني يوم الصبح منفوخة أو أوجع من الأول، يبقى الحِمل كان كتير. ارجع خطوة.</li>
+    <li>غيّر حاجة واحدة بس كل أسبوع: يا التكرارات، يا الوزن، يا مدة الثبات.</li>
+    <li>ممنوع القرفصاء العميقة، وممنوع ثني الركبة أكتر من ٩٠° وهي شايلة وزن.</li>
+    <li>ممنوع اللف على الرجل، والجري والقفز، إلا بإذن الدكتور.</li></ul></div>
+   <h3>في الحياة اليومية</h3>
+   <div class="card"><ul class="rules">
+    <li>في السلم: اطلع بالرجل السليمة الأول، وانزل بالرجل اليمين الأول.</li>
+    <li>ابعد عن القعدة على الأرض، والتربيع، والكراسي الواطية.</li>
+    <li>لو أي وضع في الصلاة بيضغط على الركبة، اسأل دكتورك عن البديل المناسب ليك في الفترة دي.</li>
+    <li>ارفع الرجل وحط ثلج في آخر اليوم لو فيه ورم.</li>
+    <li>الوزن الزيادة بيحمّل على الركبة، والأكل الصحي والنوم الكويس بيساعدوا في الشفا.</li></ul></div>
+   <h3>نسخة احتياطية</h3>
+   <div class="card">
+    <div class="muted small">بياناتك محفوظة على التليفون ده بس. خد نسخة كل أسبوع، وابعتها لنفسك على الواتساب أو الإيميل.</div>
+    <div class="acts"><button class="btn primary" type="button" id="exp">إنشاء نسخة احتياطية</button><button class="btn" type="button" id="share" hidden>مشاركة</button><button class="btn" type="button" id="copy" hidden>نسخ</button></div>
+    <textarea id="bk" placeholder="النسخة الاحتياطية هتظهر هنا. ولو عايز تسترجع بيانات، الصق النسخة هنا." style="margin-top:10px;font-size:12px;direction:ltr"></textarea>
+    <div class="acts"><button class="btn" type="button" id="imp">استرجاع من النسخة</button></div>
+   </div>
+   <h3>منطقة الخطر</h3>
+   <div class="card"><button class="btn danger" type="button" id="wipe">مسح كل البيانات</button></div>
+   <p class="muted small" style="margin-top:18px">RS KneePro · البرنامج إرشادي ومش بديل عن متابعة الدكتور وأخصائي العلاج الطبيعي.</p>`;
+  $("surg").onchange=e=>{S.surgery=e.target.value;save();renderHeader()};
+  $("v-more").querySelectorAll("[data-sd]").forEach(s=>s.onchange=()=>{S.sched[s.dataset.sd]=s.value;save();toast("الجدول اتحفظ ✓")});
+  $("exp").onclick=()=>{const t=JSON.stringify(S);$("bk").value=t;$("copy").hidden=false;$("share").hidden=!navigator.share};
+  $("copy").onclick=()=>{const t=$("bk").value;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast("اتنسخ ✓"),()=>{$("bk").select()}):$("bk").select()};
+  $("share").onclick=()=>{navigator.share({title:"RS KneePro backup "+todayKey(),text:$("bk").value}).catch(()=>{})};
+  $("imp").onclick=()=>{const b=$("imp");try{const d=JSON.parse($("bk").value);if(!d||!d.logs||!d.done)throw 0;
+     if(!b.dataset.c){b.dataset.c=1;b.textContent="اضغط تاني: البيانات الحالية هتتبدل";return}
+     S=Object.assign(DEF(),d);save();toast("اتسترجعت ✓");renderAll()}catch(e){toast("النسخة مش صحيحة. اتأكد إنك لصقتها كاملة.")}};
+  $("wipe").onclick=()=>{const b=$("wipe");if(!b.dataset.c){b.dataset.c=1;b.textContent="اضغط تاني للتأكيد. المسح نهائي";return}S=DEF();save();renderAll();toast("اتمسح")};
+}
+function renderAll(){renderHeader();renderToday();renderLog();renderProgress();renderLibrary();renderMore()}
+
+/* ============ Events ============ */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-timer]");if(t){startTimer(+t.dataset.timer,t.dataset.lbl);return}
+  const g=e.target.closest("[data-go]");if(g){show(g.dataset.go)}
+});
+$("v-today").addEventListener("change",e=>{
+  if(e.target.dataset.ex){const k=todayKey();S.done[k].ids[e.target.dataset.ex]=e.target.checked;save();renderToday();renderProgress()}
+});
+$("v-today").addEventListener("click",e=>{if(e.target.id==="clearToday"){const k=todayKey();if(S.done[k])S.done[k].ids={};save();renderToday();renderProgress()}});
+function show(v){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+  ["today","log","progress","library","more"].forEach(x=>$("v-"+x).hidden=x!==v);
+  if(v==="log"){logDate=todayKey();renderLog()}
+  if(v==="today")renderToday();
+  if(v==="progress")renderProgress();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderHeader();renderToday()}});
+
+renderAll();
+if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>

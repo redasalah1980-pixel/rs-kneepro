@@ -1,0 +1,16 @@
+{
+  "name": "RS KneePro",
+  "short_name": "KneePro",
+  "description": "برنامج تأهيل الركبة بعد خياطة الغضروف الهلالي",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#172348",
+  "theme_color": "#172348",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
