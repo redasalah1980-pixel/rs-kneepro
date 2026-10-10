@@ -118,6 +118,31 @@ textarea{min-height:80px;resize:vertical}
 .ttable{width:100%;border-collapse:collapse;font-size:.85rem;font-variant-numeric:tabular-nums;white-space:nowrap}
 .ttable th,.ttable td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
 .ttable th{color:var(--muted);font-weight:600;font-size:.75rem}
+.pill.sync{display:inline-flex;align-items:center;gap:5px}
+.pill.sync i{width:7px;height:7px;border-radius:50%;background:#5ec48f;display:inline-block}
+.pill.sync.off i{background:#ee9a6c}
+#syncBar{background:var(--warn-soft);border-bottom:1px solid var(--warn);color:var(--ink);font-size:.85rem;padding:8px 16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 54px);z-index:19}
+#syncBar .in{max-width:1180px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#login{position:fixed;inset:0;z-index:100;background:#172348;color:#fff;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 40px) 16px calc(env(safe-area-inset-bottom,0px) + 30px);display:flex;align-items:flex-start;justify-content:center}
+#login .box{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px;text-align:center}
+#login .mark{margin:0 auto 4px;width:150px;max-width:100%}
+#login h1{margin:0;font-size:1.7rem;letter-spacing:.02em}
+#login h1 b{color:#dcb462}
+#login .sub{color:#c9cfe2;font-size:.92rem;margin:0 0 8px}
+#login .frieze{height:10px;margin:2px auto 10px;width:180px;background:repeating-linear-gradient(90deg,#dcb462 0 10px,transparent 10px 14px,#dcb462 14px 16px,transparent 16px 22px);opacity:.75;border-radius:2px}
+#login input{background:#0f1834;border:1px solid #34407a;color:#fff;border-radius:12px;padding:13px;font-size:16px;width:100%;text-align:right}
+#login input::placeholder{color:#8d96b8}
+#login .go{background:#dcb462;color:#1a1405;border:0;border-radius:12px;padding:13px;font-weight:800;font-size:1rem;cursor:pointer}
+#login .go:disabled{opacity:.6}
+#login .err{color:#f3a28b;font-size:.88rem;min-height:1.2em;margin:0}
+#login .lnk{background:none;border:0;color:#c9cfe2;text-decoration:underline;cursor:pointer;font-size:.88rem;padding:6px}
+@media (min-width:900px){
+  main,.appbar .row{max-width:1180px}
+  .tgrid2{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:28px;align-items:start}
+  .tgrid2>.mainc>h3:first-child{margin-top:4px}
+  #v-library .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  nav.tabs{grid-template-columns:repeat(5,minmax(0,140px));justify-content:center}
+}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
 .chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:.88rem}
 .chips button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
@@ -145,9 +170,26 @@ nav.tabs button[aria-selected=true]{color:var(--gold);font-weight:700}
 <header class="appbar">
   <div class="row">
     <div class="brand"><b>RS</b> KneePro</div>
-    <div class="pill" id="hdrPill"></div>
+    <div style="display:flex;gap:6px;align-items:center;min-width:0;flex-wrap:wrap;justify-content:flex-end"><span class="pill sync" id="syncChip" hidden></span><div class="pill" id="hdrPill"></div></div>
   </div>
 </header>
+
+<div id="syncBar" hidden><div class="in"><span id="syncMsg"></span><button class="btn" type="button" id="syncLoginBtn" hidden>تسجيل دخول</button></div></div>
+
+<div id="login" hidden>
+  <form class="box" id="loginForm" novalidate>
+    <svg class="mark" viewBox="0 0 150 96" aria-hidden="true"><circle cx="105" cy="22" r="13" fill="none" stroke="#dcb462" stroke-width="2"/><path d="M8 88 L58 22 L108 88 Z" fill="none" stroke="#dcb462" stroke-width="2.5" stroke-linejoin="round"/><path d="M58 22 L70 88" stroke="#dcb462" stroke-width="1.5" opacity=".6"/><path d="M84 88 L116 46 L146 88 Z" fill="none" stroke="#dcb462" stroke-width="2" stroke-linejoin="round" opacity=".7"/><path d="M2 88 H148" stroke="#dcb462" stroke-width="2"/></svg>
+    <h1><b>RS</b> KneePro</h1>
+    <div class="frieze"></div>
+    <p class="sub">سجّل دخول عشان تسجيلاتك تتزامن بين الآيفون والآيباد</p>
+    <input type="email" id="lgEmail" autocomplete="username" inputmode="email" placeholder="الإيميل" dir="ltr">
+    <input type="password" id="lgPass" autocomplete="current-password" placeholder="الباسورد" dir="ltr">
+    <p class="err" id="lgErr"></p>
+    <button class="go" type="submit" id="lgGo">دخول</button>
+    <button class="lnk" type="button" id="lgForgot">نسيت الباسورد؟</button>
+    <button class="lnk" type="button" id="lgSkip">كمّل من غير مزامنة (البيانات على الجهاز ده بس)</button>
+  </form>
+</div>
 
 <main>
   <section id="v-today"></section>
@@ -267,7 +309,8 @@ const KEY="rs-kneepro-v1";
 const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{},tests:{},office:{}});
 let S;
 try{S=Object.assign(DEF(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=DEF()}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const saveQuiet=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{S.updatedAt=Date.now();saveQuiet();schedulePush()};
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 
 /* ============ Domain logic ============ */
@@ -386,7 +429,7 @@ function renderToday(){
   const weekStart=addDays(now,-((dow+1)%7));
   const week=WEEK_ORDER.map((d,i)=>{const day=addDays(weekStart,i),kk=dk(day);
     return `<div class="day${d===dow?" today":""}${isWorkout(kk)?" did":""}"><b>${DSHORT[d]}</b>${TYPE_LBL[(d===dow&&ov)||S.sched[d]]}</div>`}).join("");
-  $("v-today").innerHTML=`
+  $("v-today").innerHTML=`<div class="tgrid2"><div class="side">
    <h2>${DAYS[dow]} · ${type==="rest"?"يوم راحة":type==="both"?"تمرين بيت + جيم":"تمرين "+TYPE_LBL[type]}</h2>
    <div class="muted small">المرحلة ${ar(S.phase)}: ${PHASES[S.phase].name}</div>
    <div class="banner ${adv.cls}"><b>${adv.t}</b>${adv.d}${!logged?`<div class="acts"><button class="btn primary" type="button" data-go="log">سجّل حالة النهارده</button></div>`:""}</div>
@@ -401,17 +444,18 @@ function renderToday(){
    <div class="week">${week}</div>
    <div class="progress"><span>${ar(n)}/${ar(uniq.length)} تمرين</span><div class="bar"><i style="width:${uniq.length?n/uniq.length*100:0}%"></i></div></div>
    ${officeCard(light)}
+   </div><div class="mainc">
    ${n===uniq.length&&n>0?`<div class="banner ok"><b>برافو، خلصت تمرين النهارده ✓</b>متنساش تسجّل حالتك بالليل، أو بكرة الصبح.</div>`:""}
    ${groups.map(g=>`<h3>${g.t}</h3><div class="stack">${g.items.map(it=>exCard(it,true,dm)).join("")}</div>`).join("")}
-   <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="clearToday">مسح علامات النهارده</button></div>`;
-  save();
+   <div class="acts" style="margin-top:14px"><button class="btn" type="button" id="clearToday">مسح علامات النهارده</button></div></div></div>`;
+  saveQuiet();
 }
 let logDate=todayKey();
 function renderLog(){
   const L=S.logs[logDate]||{pain:2,sw:0,flex:"",ext:1,note:""};
   const logs=recentLogs(60);
   $("v-log").innerHTML=`
-   <h2>تسجيل الحالة</h2>
+   <h2>تسجيل الحالة</h2><div class="tgrid2"><div class="side">
    <p class="muted small">سجّل مرة في اليوم، ويفضّل الصبح. حالة الركبة الصبح بتوريك إذا كان تمرين امبارح كان كتير عليها.</p>
    <div class="card">
     <label class="f" for="lgDate">التاريخ</label><input type="date" id="lgDate" value="${logDate}" max="${todayKey()}">
@@ -430,12 +474,13 @@ function renderLog(){
     <textarea id="lgNote" placeholder="مثلًا: وجع بعد السلم، طقطقة، نمت كويس...">${esc(L.note)}</textarea>
     <div style="margin-top:14px"><button class="btn gold block" type="button" id="lgSave">حفظ التسجيل</button></div>
    </div>
+   </div><div class="mainc">
    <h3>الألم والورم · آخر ٣٠ يوم</h3>
    <div class="card chartbox">${chart()}</div>
    <h3>آخر التسجيلات</h3>
    <div class="card">${logs.length?logs.slice(0,20).map(x=>`<div class="logrow"><span class="muted">${ar(x.date.slice(5).replace("-","/"))}</span>
      <span>ألم <b>${ar(x.pain)}</b> · ورم ${SWELL_LBL[x.sw]}${x.flex?` · ثني ${ar(x.flex)}°`:""}${x.note?`<div class="muted small">${esc(x.note)}</div>`:""}</span>
-     <span class="dot" style="background:${x.pain<=3?"var(--ok)":x.pain<=5?"var(--gold)":"var(--bad)"}"></span></div>`).join(""):`<div class="muted">لسه مفيش تسجيلات. أول تسجيل هيظهر هنا.</div>`}</div>`;
+     <span class="dot" style="background:${x.pain<=3?"var(--ok)":x.pain<=5?"var(--gold)":"var(--bad)"}"></span></div>`).join(""):`<div class="muted">لسه مفيش تسجيلات. أول تسجيل هيظهر هنا.</div>`}</div></div></div>`;
   const ls=$("lgSw"),le=$("lgExt");
   const st={sw:L.sw,ext:L.ext};
   ls.onclick=e=>{const b=e.target.closest("button");if(!b)return;st.sw=+b.dataset.v;[...ls.children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
@@ -477,7 +522,7 @@ function renderProgress(){
   for(let d=1;d<=dim;d++){const k=dk(new Date(y,m,d));cells+=`<div class="c${isWorkout(k)?" w":""}${k===todayKey()?" t":""}">${ar(d)}${S.logs[k]?"<i></i>":""}</div>`}
   const cs=critStatus(S.phase),allOk=cs.length&&cs.every(c=>c.ok);
   $("v-progress").innerHTML=`
-   <h2>التقدم</h2>
+   <h2>التقدم</h2><div class="tgrid2"><div class="side">
    <div class="tiles">
     <div class="tile"><b>${ar(ws)}</b><span>يوم تمرين في المرحلة</span></div>
     <div class="tile"><b>${ar(sk)}</b><span>أيام متتالية</span></div>
@@ -494,6 +539,7 @@ function renderProgress(){
     :`<div class="banner info"><b>دي آخر مرحلة في البرنامج</b>الرجوع للجري أو القفز أو أي رياضة فيها لف، لازم يكون بإذن الدكتور بعد ما يكشف عليك.</div>`}
     ${S.phase>1?`<div class="acts"><button class="btn" type="button" id="back">ارجع للمرحلة ${ar(S.phase-1)}</button></div><div class="muted small">لو حصل ورم أو الألم زاد لأكتر من أسبوع، ارجع للمرحلة اللي قبلها.</div>`:""}
    </div>
+   </div><div class="mainc">
    <h3>اختبار الأسبوع</h3>
    <div class="card">${testSummary()}
     <div class="acts"><button class="btn ${testOpen?"":"gold"}" type="button" id="testToggle">${testOpen?"إلغاء":"ابدأ اختبار الأسبوع"}</button></div>
@@ -505,7 +551,7 @@ function renderProgress(){
     <div class="calnav"><button class="btn" type="button" id="calPrev">‹ السابق</button><b>${MONTHS[m]} ${ar(y)}</b><button class="btn" type="button" id="calNext">التالي ›</button></div>
     <div class="cal">${cells}</div>
     <div class="small muted" style="margin-top:8px">الأخضر = يوم تمرين (خلصت ٧٠٪ أو أكتر) · النقطة = فيه تسجيل حالة</div>
-   </div>`;
+   </div></div></div>`;
   $("testToggle").onclick=()=>{stopSW();testOpen=!testOpen;renderProgress()};
   if(testOpen){
     $("v-progress").querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>toggleSW(b.dataset.sw,b));
@@ -603,6 +649,8 @@ function renderLibrary(){
 function renderMore(){
   $("v-more").innerHTML=`
    <h2>الإعدادات والمعلومات</h2>
+   <h3>الحساب والمزامنة</h3>
+   <div class="card" id="acctBox">${acctHTML()}</div>
    <h3>تاريخ العملية</h3>
    <div class="card"><input type="date" id="surg" value="${S.surgery}" max="${todayKey()}"><div class="muted small" style="margin-top:6px">بيظهر رقم الأسبوع بعد العملية في أعلى الشاشة.</div></div>
    <h3>جدول الأسبوع</h3>
@@ -639,6 +687,7 @@ function renderMore(){
    <h3>منطقة الخطر</h3>
    <div class="card"><button class="btn danger" type="button" id="wipe">مسح كل البيانات</button></div>
    <p class="muted small" style="margin-top:18px">RS KneePro · البرنامج إرشادي ومش بديل عن متابعة الدكتور وأخصائي العلاج الطبيعي.</p>`;
+  bindAcct();
   $("surg").onchange=e=>{S.surgery=e.target.value;save();renderHeader()};
   $("v-more").querySelectorAll("[data-sd]").forEach(s=>s.onchange=()=>{S.sched[s.dataset.sd]=s.value;save();toast("الجدول اتحفظ ✓")});
   $("exp").onclick=()=>{const t=JSON.stringify(S);$("bk").value=t;$("copy").hidden=false;$("share").hidden=!navigator.share};
@@ -649,6 +698,98 @@ function renderMore(){
      S=Object.assign(DEF(),d);save();toast("اتسترجعت ✓");renderAll()}catch(e){toast("النسخة مش صحيحة. اتأكد إنك لصقتها كاملة.")}};
   $("wipe").onclick=()=>{const b=$("wipe");if(!b.dataset.c){b.dataset.c=1;b.textContent="اضغط تاني للتأكيد. المسح نهائي";return}S=DEF();save();renderAll();toast("اتمسح")};
 }
+/* ============ Sync (Firebase Realtime Database) ============ */
+const FB_CFG={apiKey:"AIzaSyC6o1OZb9UnJgGGl1jEBe-XMzxnkJxw0Qg",authDomain:"rs-kneepro.firebaseapp.com",databaseURL:"https://rs-kneepro-default-rtdb.europe-west1.firebasedatabase.app",projectId:"rs-kneepro",storageBucket:"rs-kneepro.firebasestorage.app",messagingSenderId:"586912447651",appId:"1:586912447651:web:e0cc1adec912692b631316"};
+const FB_VER="10.12.2";
+let FB=null,fbUser=null,fbOnline=false,fbRef=null,pushT=null,fbState="loading",bootT=Date.now();
+let syncSkipped=false;try{syncSkipped=localStorage.getItem("rs-kneepro-skip")==="1"}catch(e){}
+function prune(o){if(Array.isArray(o)){const x={};o.forEach((v,i)=>{if(v!=null)x[i]=v});o=x}
+  if(o&&typeof o==="object"){const r={};Object.keys(o).sort().forEach(k=>{const v=prune(o[k]);if(v===undefined||v===null)return;if(typeof v==="object"&&!Object.keys(v).length)return;r[k]=v});return r}
+  return o}
+const canon=o=>JSON.stringify(prune(JSON.parse(JSON.stringify(o))));
+function normalize(o){o=Object.assign(DEF(),prune(o||{}));["logs","done","tests","office","override","checks"].forEach(f=>{o[f]=o[f]||{}});
+  Object.keys(o.done).forEach(k=>{o.done[k].ids=o.done[k].ids||{}});return o}
+function merge(a,b){
+  const newer=(!!a.synced!==!!b.synced)?(a.synced?a:b):((a.updatedAt||0)>=(b.updatedAt||0)?a:b),older=newer===a?b:a;
+  const out=JSON.parse(JSON.stringify(newer));
+  ["logs","tests","override"].forEach(f=>{out[f]=out[f]||{};Object.keys(older[f]||{}).forEach(k=>{if(!(k in out[f]))out[f][k]=older[f][k]})});
+  out.checks=out.checks||{};Object.keys(older.checks||{}).forEach(p=>{out.checks[p]=Object.assign({},older.checks[p],out.checks[p]||{})});
+  out.office=out.office||{};Object.keys(older.office||{}).forEach(k=>{out.office[k]=Math.max(out.office[k]||0,older.office[k]||0)});
+  out.done=out.done||{};Object.keys(older.done||{}).forEach(k=>{const o=older.done[k];if(!out.done[k]){out.done[k]=o;return}
+    if(out.done[k].t===o.t){const ids=out.done[k].ids=out.done[k].ids||{};Object.keys(o.ids||{}).forEach(i=>{if(o.ids[i])ids[i]=true})}});
+  if(!out.surgery&&older.surgery)out.surgery=older.surgery;
+  out.updatedAt=Math.max(a.updatedAt||0,b.updatedAt||0);out.synced=true;
+  return out;
+}
+function pushNow(){if(!fbRef)return;clearTimeout(pushT);fbRef.set(JSON.parse(JSON.stringify(prune(S)))).catch(()=>{fbState="error";setSync()})}
+function schedulePush(){if(!fbRef)return;clearTimeout(pushT);pushT=setTimeout(pushNow,1200)}
+function setSync(){
+  const chip=$("syncChip"),bar=$("syncBar"),msg=$("syncMsg"),lb=$("syncLoginBtn");
+  let ok=false,text="";
+  if(fbState==="nofb")text="المزامنة مش شغالة دلوقتي: التطبيق اتفتح من غير نت. تسجيلاتك محفوظة على الجهاز، واقفل التطبيق وافتحه لما النت يرجع.";
+  else if(!fbUser)text=fbState==="loading"?"":"المزامنة مقفولة. البيانات محفوظة على الجهاز ده بس.";
+  else if(fbState==="error")text="حصلت مشكلة في المزامنة. تسجيلاتك محفوظة على الجهاز، وهنحاول تاني لوحدنا.";
+  else if(!fbOnline)text="مفيش نت. تسجيلاتك محفوظة على الجهاز، وهتتزامن أول ما النت يرجع.";
+  else ok=true;
+  chip.hidden=fbState==="loading"&&!fbUser;
+  chip.className="pill sync"+(ok?"":" off");chip.innerHTML="<i></i>"+(ok?"متزامن":"مش متزامن");
+  const grace=Date.now()-bootT<3000&&fbUser&&!fbOnline;
+  bar.hidden=ok||!text||grace;msg.textContent=text;lb.hidden=!!fbUser||fbState==="nofb";
+  if(grace)setTimeout(setSync,3100);
+  const a=$("acctBox");if(a){a.innerHTML=acctHTML();bindAcct()}
+}
+function acctHTML(){
+  if(fbUser)return `<div>مسجّل دخول بـ <b dir="ltr">${esc(fbUser.email)}</b></div><div class="muted small">${fbOnline?"متزامن مع كل أجهزتك ✓":"مش متصل دلوقتي، وهيتزامن لما النت يرجع"}</div><div class="acts"><button class="btn danger" type="button" id="logoutBtn">تسجيل خروج</button></div>`;
+  return `<div class="muted small">البيانات محفوظة على الجهاز ده بس. سجّل دخول عشان تشوفها على الآيفون والآيباد مع بعض.</div><div class="acts"><button class="btn primary" type="button" id="loginOpen">تسجيل دخول</button></div>`;
+}
+function bindAcct(){
+  const lo=$("logoutBtn");if(lo)lo.onclick=()=>{if(!lo.dataset.c){lo.dataset.c=1;lo.textContent="اضغط تاني للتأكيد";return}FB&&FB.auth().signOut()};
+  const li=$("loginOpen");if(li)li.onclick=showLogin;
+}
+function showLogin(){if(fbState==="nofb"){toast("محتاج نت عشان تسجّل دخول");return}$("login").hidden=false;$("lgErr").textContent=""}
+function hideLogin(){$("login").hidden=true}
+function rerender(){const a=document.activeElement,typing=a&&$("v-log").contains(a)&&/INPUT|TEXTAREA/.test(a.tagName);
+  renderHeader();renderToday();if(!typing)renderLog();renderProgress();renderLibrary();if(!$("v-more").contains(a))renderMore()}
+function loadScript(src){return new Promise((ok,no)=>{const sc=document.createElement("script");sc.src=src;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)})}
+async function initSync(){
+  const base="https://www.gstatic.com/firebasejs/"+FB_VER+"/";
+  try{await loadScript(base+"firebase-app-compat.js");await Promise.all([loadScript(base+"firebase-auth-compat.js"),loadScript(base+"firebase-database-compat.js")])}
+  catch(e){fbState="nofb";setSync();return}
+  FB=firebase;FB.initializeApp(FB_CFG);
+  const db=FB.database();
+  db.ref(".info/connected").on("value",s=>{fbOnline=!!s.val();if(fbOnline&&fbState==="error")fbState="ready";setSync()});
+  FB.auth().onAuthStateChanged(u=>{
+    fbUser=u;fbState="ready";
+    if(fbRef){fbRef.off();fbRef=null}
+    if(u){
+      hideLogin();try{localStorage.removeItem("rs-kneepro-skip")}catch(e){}syncSkipped=false;
+      fbRef=db.ref("kneepro/"+u.uid+"/state");
+      fbRef.on("value",snap=>{
+        const r=snap.val();
+        if(!r){if(!S.updatedAt)S.updatedAt=Date.now();S.synced=true;saveQuiet();pushNow();return}
+        const remote=normalize(r),before=canon(S),m=merge(S,remote);
+        S=normalize(m);saveQuiet();
+        if(canon(S)!==canon(remote))schedulePush();
+        if(canon(S)!==before)rerender();
+      },()=>{fbState="error";setSync()});
+    }else if(!syncSkipped)showLogin();
+    setSync();
+  });
+}
+$("loginForm").addEventListener("submit",e=>{e.preventDefault();if(!FB)return;
+  const em=$("lgEmail").value.trim(),pw=$("lgPass").value;
+  if(!em||!pw){$("lgErr").textContent="اكتب الإيميل والباسورد.";return}
+  $("lgGo").disabled=true;$("lgGo").textContent="بيسجّل دخول...";
+  FB.auth().signInWithEmailAndPassword(em,pw).catch(err=>{
+    const c=err&&err.code||"";
+    $("lgErr").textContent=/invalid-credential|wrong-password|user-not-found|invalid-email|invalid-login/.test(c)?"الإيميل أو الباسورد غلط.":c.includes("network")?"مفيش نت. اتأكد من الاتصال وجرّب تاني.":c.includes("too-many")?"محاولات كتير. استنى شوية وجرّب تاني.":"مقدرناش نسجّل دخول. جرّب تاني.";
+  }).finally(()=>{$("lgGo").disabled=false;$("lgGo").textContent="دخول"});
+});
+$("lgForgot").onclick=()=>{if(!FB)return;const em=$("lgEmail").value.trim();if(!em){$("lgErr").textContent="اكتب إيميلك الأول، وبعدين دوس نسيت الباسورد.";return}
+  FB.auth().sendPasswordResetEmail(em).then(()=>{$("lgErr").textContent="بعتنالك إيميل فيه لينك تغيير الباسورد."}).catch(()=>{$("lgErr").textContent="مقدرناش نبعت الإيميل. اتأكد إنه مكتوب صح."})};
+$("lgSkip").onclick=()=>{syncSkipped=true;try{localStorage.setItem("rs-kneepro-skip","1")}catch(e){}hideLogin();setSync()};
+$("syncLoginBtn").onclick=showLogin;
+
 function renderAll(){renderHeader();renderToday();renderLog();renderProgress();renderLibrary();renderMore()}
 
 /* ============ Events ============ */
@@ -679,6 +820,8 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dat
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderHeader();renderToday()}});
 
 renderAll();
+setSync();
+initSync();
 if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
 </body>
