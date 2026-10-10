@@ -72,6 +72,9 @@ h3{font-size:.85rem;color:var(--gold);margin:18px 0 8px;letter-spacing:.03em}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg.two{grid-template-columns:repeat(2,1fr)}
+.seg.four{grid-template-columns:repeat(4,1fr)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.linkbtn{background:none;border:0;padding:0;color:var(--gold);font-weight:700;text-decoration:underline;cursor:pointer;font-size:inherit}
 .seg button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 4px;cursor:pointer;font-size:.9rem}
 .seg button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
 label.f{display:block;font-weight:600;margin:14px 0 6px}
@@ -165,7 +168,8 @@ const yt=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q
 const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 const DSHORT=["أحد","اثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"];
 const WEEK_ORDER=[6,0,1,2,3,4,5];
-const TYPE_LBL={home:"بيت",gym:"جيم",rest:"راحة"};
+const TYPE_LBL={home:"بيت",gym:"جيم",both:"الاتنين",rest:"راحة"};
+const TYPE_FULL={home:"تمرين بيت",gym:"تمرين جيم",both:"بيت + جيم",rest:"راحة + مشي"};
 const SWELL_LBL=["مفيش","خفيف","واضح"];
 const $=id=>document.getElementById(id);
 
@@ -232,7 +236,7 @@ const REST=[["walk","٢٠–٣٠ دقيقة",0]];
 
 /* ============ State ============ */
 const KEY="rs-kneepro-v1";
-const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},logs:{},done:{},checks:{}});
+const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{}});
 let S;
 try{S=Object.assign(DEF(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=DEF()}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -242,6 +246,8 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
 const todayKey=()=>dk(new Date());
 function groupsFor(type,phase){
   if(type==="rest")return [{t:"نشاط خفيف",id:"rest",items:REST},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
+  if(type==="both"){const g=PHASES[phase].gym,ids=new Set(g.map(i=>i[0]));
+    return [{t:"إحماء",id:"warm",items:WARM.gym},{t:"التمارين الأساسية · جيم",id:"main",items:g},{t:"تمارين البيت الإضافية",id:"main2",items:PHASES[phase].home.filter(i=>!ids.has(i[0]))},{t:"إطالة وتهدئة",id:"cool",items:COOL}];}
   return [{t:"إحماء",id:"warm",items:WARM[type]},{t:"التمارين الأساسية · "+(type==="gym"?"جيم":"بيت"),id:"main",items:PHASES[phase][type]},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
 }
 function isWorkout(key){const d=S.done[key];if(!d||d.t==="rest"||!d.total)return false;return Object.values(d.ids||{}).filter(Boolean).length/d.total>=0.7}
@@ -321,21 +327,33 @@ function renderHeader(){
   $("hdrPill").textContent="المرحلة "+ar(S.phase)+(w!==null?" · الأسبوع "+ar(w)+" بعد العملية":"");
 }
 function renderToday(){
-  const now=new Date(),k=todayKey(),dow=now.getDay(),type=S.sched[dow];
+  const now=new Date(),k=todayKey(),dow=now.getDay(),adv=loadAdvice(),light=adv.cls==="warn";
+  S.override=S.override||{};
+  Object.keys(S.override).forEach(x=>{if(x<k)delete S.override[x]});
+  const planned=S.sched[dow],ov=S.override[k];
+  let type=ov||planned,blocked=false;
+  if(type==="both"&&light){type="gym";blocked=true}
   const groups=groupsFor(type,S.phase);
   const all=groups.flatMap(g=>g.items.map(i=>i[0]));
   const uniq=[...new Set(all)];
   if(!S.done[k]||S.done[k].t!==type)S.done[k]={t:type,ids:(S.done[k]&&S.done[k].ids)||{},total:uniq.length};
   S.done[k].total=uniq.length;
   const dm=S.done[k].ids,n=uniq.filter(i=>dm[i]).length;
-  const adv=loadAdvice(),logged=!!S.logs[k];
+  const logged=!!S.logs[k];
   const weekStart=addDays(now,-((dow+1)%7));
   const week=WEEK_ORDER.map((d,i)=>{const day=addDays(weekStart,i),kk=dk(day);
-    return `<div class="day${d===dow?" today":""}${isWorkout(kk)?" did":""}"><b>${DSHORT[d]}</b>${TYPE_LBL[S.sched[d]]}</div>`}).join("");
+    return `<div class="day${d===dow?" today":""}${isWorkout(kk)?" did":""}"><b>${DSHORT[d]}</b>${TYPE_LBL[(d===dow&&ov)||S.sched[d]]}</div>`}).join("");
   $("v-today").innerHTML=`
-   <h2>${DAYS[dow]} · ${type==="rest"?"يوم راحة":"تمرين "+TYPE_LBL[type]}</h2>
+   <h2>${DAYS[dow]} · ${type==="rest"?"يوم راحة":type==="both"?"تمرين بيت + جيم":"تمرين "+TYPE_LBL[type]}</h2>
    <div class="muted small">المرحلة ${ar(S.phase)}: ${PHASES[S.phase].name}</div>
    <div class="banner ${adv.cls}"><b>${adv.t}</b>${adv.d}${!logged?`<div class="acts"><button class="btn primary" type="button" data-go="log">سجّل حالة النهارده</button></div>`:""}</div>
+   <label class="f" style="margin-top:4px">تمرين النهارده</label>
+   <div class="seg four" id="todayType">${["home","gym","both","rest"].map(t=>`<button type="button" data-tt="${t}" aria-pressed="${type===t}" ${t==="both"&&light?"disabled":""}>${TYPE_LBL[t]}</button>`).join("")}</div>
+   ${ov&&ov!==planned?`<div class="small muted" style="margin-top:6px">غيّرت النهارده بس. الجدول الأسبوعي: ${TYPE_FULL[planned]} · <button class="linkbtn" type="button" id="resetType">ارجع للجدول</button></div>`:""}
+   ${light?`<div class="small muted" style="margin-top:6px">"الاتنين" مقفول النهارده عشان النهارده يوم خفيف.</div>`:""}
+   ${blocked?`<div class="banner warn"><b>النهارده كان مكتوب بيت + جيم</b>بس بما إن النهارده يوم خفيف، اتحوّل لجيم بس.</div>`:""}
+   ${type==="both"?`<div class="banner info"><b>يوم مضاعف</b>حِمل النهارده ضعف اليوم العادي. لو صحيت بكرة والورم أو الألم زاد، ارجع لتمرين واحد في اليوم. الأحسن متعملش ده أكتر من مرة في الأسبوع.</div>`:""}
+   <h3>الأسبوع</h3>
    <div class="week">${week}</div>
    <div class="progress"><span>${ar(n)}/${ar(uniq.length)} تمرين</span><div class="bar"><i style="width:${uniq.length?n/uniq.length*100:0}%"></i></div></div>
    ${n===uniq.length&&n>0?`<div class="banner ok"><b>برافو، خلصت تمرين النهارده ✓</b>متنساش تسجّل حالتك بالليل، أو بكرة الصبح.</div>`:""}
@@ -465,7 +483,7 @@ function renderMore(){
    <div class="card"><input type="date" id="surg" value="${S.surgery}" max="${todayKey()}"><div class="muted small" style="margin-top:6px">بيظهر رقم الأسبوع بعد العملية في أعلى الشاشة.</div></div>
    <h3>جدول الأسبوع</h3>
    <div class="card stack">${WEEK_ORDER.map(d=>`<div style="display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center"><span>${DAYS[d]}</span>
-     <select data-sd="${d}" aria-label="${DAYS[d]}">${["home","gym","rest"].map(t=>`<option value="${t}" ${S.sched[d]===t?"selected":""}>${t==="home"?"تمرين بيت":t==="gym"?"تمرين جيم":"راحة + مشي"}</option>`).join("")}</select></div>`).join("")}</div>
+     <select data-sd="${d}" aria-label="${DAYS[d]}">${["home","gym","both","rest"].map(t=>`<option value="${t}" ${S.sched[d]===t?"selected":""}>${TYPE_FULL[t]}</option>`).join("")}</select></div>`).join("")}</div>
    <h3>وقّف فورًا وكلّم الدكتور لو</h3>
    <div class="card"><ul class="rules">
     <li>الركبة قفلت أو اتزنقت، ومش عارف تفردها.</li>
@@ -517,7 +535,11 @@ document.addEventListener("click",e=>{
 $("v-today").addEventListener("change",e=>{
   if(e.target.dataset.ex){const k=todayKey();S.done[k].ids[e.target.dataset.ex]=e.target.checked;save();renderToday();renderProgress()}
 });
-$("v-today").addEventListener("click",e=>{if(e.target.id==="clearToday"){const k=todayKey();if(S.done[k])S.done[k].ids={};save();renderToday();renderProgress()}});
+$("v-today").addEventListener("click",e=>{
+  const tt=e.target.closest("[data-tt]");
+  if(tt&&!tt.disabled){S.override=S.override||{};const k=todayKey();if(tt.dataset.tt===S.sched[new Date().getDay()])delete S.override[k];else S.override[k]=tt.dataset.tt;save();renderToday();return}
+  if(e.target.id==="resetType"){delete S.override[todayKey()];save();renderToday();return}
+  if(e.target.id==="clearToday"){const k=todayKey();if(S.done[k])S.done[k].ids={};save();renderToday();renderProgress()}});
 function show(v){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
   ["today","log","progress","library","more"].forEach(x=>$("v-"+x).hidden=x!==v);
