@@ -10,6 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="KneePro">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js">
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
 <style>
@@ -729,14 +733,14 @@ function pushNow(){if(!fbRef)return;clearTimeout(pushT);fbRef.set(JSON.parse(JSO
 function schedulePush(){if(!fbRef)return;clearTimeout(pushT);pushT=setTimeout(pushNow,1200)}
 function setSync(){
   const chip=$("syncChip"),bar=$("syncBar"),msg=$("syncMsg"),lb=$("syncLoginBtn");
-  let ok=false,text="";
+  let ok=false,text="";const connecting=fbState==="loading"&&!!knownUser;
   if(fbState==="nofb")text="المزامنة مش شغالة دلوقتي: التطبيق اتفتح من غير نت. تسجيلاتك محفوظة على الجهاز، واقفل التطبيق وافتحه لما النت يرجع.";
   else if(!fbUser)text=fbState==="loading"?"":"المزامنة مقفولة. البيانات محفوظة على الجهاز ده بس.";
   else if(fbState==="error")text="حصلت مشكلة في المزامنة. تسجيلاتك محفوظة على الجهاز، وهنحاول تاني لوحدنا.";
   else if(!fbOnline)text="مفيش نت. تسجيلاتك محفوظة على الجهاز، وهتتزامن أول ما النت يرجع.";
   else ok=true;
-  chip.hidden=fbState==="loading"&&!fbUser;
-  chip.className="pill sync"+(ok?"":" off");chip.innerHTML="<i></i>"+(ok?"متزامن":"مش متزامن");
+  chip.hidden=fbState==="loading"&&!fbUser&&!connecting;
+  chip.className="pill sync"+(ok?"":" off");chip.innerHTML="<i></i>"+(ok?"متزامن":connecting?"بيتزامن...":"مش متزامن");
   const grace=Date.now()-bootT<3000&&fbUser&&!fbOnline;
   bar.hidden=ok||!text||grace;msg.textContent=text;lb.hidden=!!fbUser||fbState==="nofb";
   if(grace)setTimeout(setSync,3100);
@@ -751,8 +755,10 @@ function bindAcct(){
   const li=$("loginOpen");if(li)li.onclick=showLogin;
 }
 let authResolved=false;
+let knownUser="";try{knownUser=localStorage.getItem("rs-kneepro-user")||""}catch(e){}
+function setGoReady(){const g=$("lgGo");if(!g)return;g.disabled=!FB;g.textContent=FB?"دخول":"بنجهّز الاتصال..."}
 function setLoginMode(m){$("lgFields").hidden=m==="wait";$("lgWait").hidden=m!=="wait"}
-function showLogin(){if(fbState==="nofb"){toast("محتاج نت عشان تسجّل دخول");return}setLoginMode("form");$("login").hidden=false;$("lgErr").textContent=""}
+function showLogin(){if(fbState==="nofb"){toast("محتاج نت عشان تسجّل دخول");return}setLoginMode("form");setGoReady();$("login").hidden=false;$("lgErr").textContent=""}
 function hideLogin(){$("login").hidden=true}
 function rerender(){const a=document.activeElement,typing=a&&$("v-log").contains(a)&&/INPUT|TEXTAREA/.test(a.tagName);
   renderHeader();renderToday();if(!typing)renderLog();renderProgress();renderLibrary();if(!$("v-more").contains(a))renderMore()}
@@ -761,14 +767,14 @@ async function initSync(){
   const base="https://www.gstatic.com/firebasejs/"+FB_VER+"/";
   try{await loadScript(base+"firebase-app-compat.js");await Promise.all([loadScript(base+"firebase-auth-compat.js"),loadScript(base+"firebase-database-compat.js")])}
   catch(e){fbState="nofb";hideLogin();setSync();return}
-  FB=firebase;FB.initializeApp(FB_CFG);
+  FB=firebase;FB.initializeApp(FB_CFG);setGoReady();
   const db=FB.database();
   db.ref(".info/connected").on("value",s=>{fbOnline=!!s.val();if(fbOnline&&fbState==="error")fbState="ready";setSync()});
   FB.auth().onAuthStateChanged(u=>{
     fbUser=u;fbState="ready";authResolved=true;
     if(fbRef){fbRef.off();fbRef=null}
     if(u){
-      hideLogin();try{localStorage.removeItem("rs-kneepro-skip")}catch(e){}syncSkipped=false;
+      hideLogin();try{localStorage.removeItem("rs-kneepro-skip");localStorage.setItem("rs-kneepro-user",u.email||"1")}catch(e){}syncSkipped=false;knownUser=u.email||"1";
       fbRef=db.ref("kneepro/"+u.uid+"/state");
       fbRef.on("value",snap=>{
         const r=snap.val();
@@ -778,7 +784,7 @@ async function initSync(){
         if(canon(S)!==canon(remote))schedulePush();
         if(canon(S)!==before)rerender();
       },()=>{fbState="error";setSync()});
-    }else if(!syncSkipped)showLogin();
+    }else{try{localStorage.removeItem("rs-kneepro-user")}catch(e){}knownUser="";if(!syncSkipped)showLogin()}
     setSync();
   });
 }
@@ -826,7 +832,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dat
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderHeader();renderToday()}});
 
 renderAll();
-if(!syncSkipped){setLoginMode("wait");$("login").hidden=false;setTimeout(()=>{if(!authResolved)hideLogin()},8000)}
+if(!syncSkipped&&!knownUser)showLogin();
 setSync();
 initSync();
 if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
