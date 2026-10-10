@@ -1,5 +1,5 @@
-// RS KneePro service worker: network first, cache fallback (works offline, picks up updates when online)
-const CACHE = 'kneepro-v1';
+// RS KneePro service worker: always fetch the latest version when online (skips the 10-min browser cache), falls back to saved copy offline
+const CACHE = 'kneepro-v2';
 const FILES = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(req).then(res => {
+    fetch(req, { cache: 'no-store' }).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy));
       return res;
