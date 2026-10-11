@@ -36,7 +36,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 a{color:inherit}
 .appbar{background:var(--navy);color:var(--navy-ink);padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 14px;position:sticky;top:0;z-index:20}
 .appbar .row{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:720px;margin:0 auto}
-.brand{font-weight:800;font-size:1.15rem;letter-spacing:.02em}
+.brand{font-weight:800;font-size:1.15rem;letter-spacing:.02em;white-space:nowrap;flex:0 0 auto}
 .brand b{color:var(--gold)}
 .pill{font-size:.78rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px 10px;white-space:nowrap}
 main{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:14px calc(96px + env(safe-area-inset-bottom,0px))}
@@ -152,6 +152,9 @@ textarea{min-height:80px;resize:vertical}
 .wins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .wins label{display:flex;flex-direction:column;gap:3px}
 .wins input{padding:8px 10px}
+.locs{display:flex;flex-wrap:wrap;gap:6px}
+.locs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:.88rem}
+.locs button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
 .chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:.88rem}
 .chips button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
@@ -242,6 +245,8 @@ const WEEK_ORDER=[6,0,1,2,3,4,5];
 const TYPE_LBL={home:"بيت",gym:"جيم",both:"الاتنين",rest:"راحة"};
 const TYPE_FULL={home:"تمرين بيت",gym:"تمرين جيم",both:"بيت + جيم",rest:"راحة + مشي"};
 const SWELL_LBL=["مفيش","خفيف","واضح"];
+const LOCS=[["in","جوه، تحت المفصل"],["inj","جوه، على المفصل"],["out","بره"],["front","قدام (الصابونة)"],["back","ورا"]];
+const LOC_LBL=Object.fromEntries(LOCS);
 const $=id=>document.getElementById(id);
 
 /* ============ Exercise library ============ */
@@ -305,7 +310,7 @@ const W=t=>({w:1,top:t});
 const PHASES={
 1:{name:"تأسيس القوة",goal:"ترجّع القوة الأساسية للفخذ والسمانة والحوض بأوزان متوسطة ونزول بطيء، وتقوّي الأوتار بتمارين الثبات.",
  home:[["spanish","٥×٣٠ ث",30],["wallsit","٤×٤٠ ث · ٤٥–٦٠°",40],["sl_bridge","٣×١٢",0],["stepup","٣×١٠ · درجة ٢٠ سم · نزول ٣ ث",0],["lat_stepdown","٣×١٠",0],["sl_rdl","٣×١٠",0],["bandwalk","٣×١٢ خطوة",0],["sl_calf","٣×١٥ · نزول ٣ ث",0],["calf_bent","٣×١٥",0],["balance2","٣×٣٠ ث",30]],
- gym:[["legpress","٣×١٠–١٢ · ٠–٩٠° · نزول ٣ ث",0,W(12)],["sl_legpress","٣×١٠–١٢ · ابدأ باليمين",0,W(12)],["legext","٣×١٠–١٢ · ٩٠–٣٠°",0,W(12)],["hamcurl","٣×١٠–١٢",0,W(12)],["rdl","٣×١٠",0,W(10)],["abd","٣×١٥",0,W(15)],["calfm","٣×١٢–١٥",0,W(15)],["seatcalf","٣×١٥",0,W(15)],["spanish","٤×٣٠ ث",30],["lat_stepdown","٣×١٠",0]]},
+ gym:[["legpress","٣×١٠–١٢ · لحد ٩٠° · نزول ٣ ث",0,W(12)],["sl_legpress","٣×١٠–١٢ · ابدأ باليمين",0,W(12)],["legext","٣×١٠–١٢ · من ٩٠ لـ ٣٠°",0,W(12)],["hamcurl","٣×١٠–١٢",0,W(12)],["rdl","٣×١٠",0,W(10)],["abd","٣×١٥",0,W(15)],["calfm","٣×١٢–١٥",0,W(15)],["seatcalf","٣×١٥",0,W(15)],["spanish","٤×٣٠ ث",30],["lat_stepdown","٣×١٠",0]]},
 2:{name:"بناء العضلة",goal:"تزوّد حجم العضلة وقوتها بأوزان أتقل، ٤ مجموعات، وآخر عدتين في كل مجموعة صعبين.",
  home:[["spanish","٥×٤٥ ث",45],["sl_bridge","٤×١٢",0],["stepup","٤×١٠ · بشنطة ضهر فيها وزن",0],["fwd_stepdown","٣×١٠",0],["split","٣×١٠ · نزول ربع لنص المسافة",0],["sl_rdl","٣×١٠ · بوزن في الإيد",0],["bandwalk","٣×١٥ خطوة",0],["sl_calf","٤×١٥",0],["calf_bent","٤×١٥",0],["balance2","٣×٤٥ ث",45]],
  gym:[["legpress","٤×٨–١٢ · نزول ٣ ث",0,W(12)],["sl_legpress","٤×١٠",0,W(10)],["legext","٤×١٠–١٢",0,W(12)],["hamcurl","٤×١٠–١٢",0,W(12)],["rdl","٤×٨–١٠",0,W(10)],["hipthrust","٣×١٠",0,W(10)],["split","٣×١٠ · بدامبلز",0,W(10)],["calfm","٤×١٠–١٢",0,W(12)],["seatcalf","٤×١٢–١٥",0,W(15)],["spanish","٤×٤٥ ث",45]]},
@@ -357,6 +362,8 @@ function weekPostOp(){if(!S.surgery)return null;return Math.floor((new Date()-pa
 
 /* ---- weekly tests ---- */
 const TESTS=[
+ {k:"thigh",n:"مقاس الفخذ (الضمور)",u:"سم",how:"اقعد والرجل مفرودة ومرتاحة. علّم بقلم ١٥ سم فوق حافة الصابونة العليا، ولف الشريط هناك من غير ما تشد العضلة. نفس المسافة في الرجلين، وفي نفس المكان كل أسبوع.",q:"thigh circumference measurement quadriceps atrophy"},
+ {k:"calf",n:"مقاس السمانة (الضمور)",u:"سم",how:"اقعد والقدم على الأرض والعضلة مرتاحة. لف الشريط حوالين أعرض جزء في السمانة، في الرجلين.",q:"calf circumference measurement"},
  {k:"girth",n:"مقاس الركبة",u:"سم",how:"اقعد والرجل مفرودة ومرتاحة، ولف شريط القياس حوالين الركبة فوق حافة الصابونة العليا على طول. قيس الرجلين، ويفضّل الصبح، وفي نفس المكان كل مرة.",q:"knee girth measurement swelling tape"},
  {k:"bal",n:"الاتزان على رجل واحدة",u:"ث",how:"اقف على رجل واحدة جنب حيطة، وإيديك على وسطك وعينك مفتوحة. الوقت بيقف أول ما الرجل التانية تلمس الأرض أو تسند بإيدك. أقصى وقت ٦٠ ثانية.",q:"single leg stance balance test"},
  {k:"wall",n:"قعدة الحيطة",u:"ث",how:"ضهرك على الحيطة، والركبتين على زاوية ٤٥–٦٠° بس. وقّف لما تتعب، أو لو الألم عدّى ٣ من ١٠.",q:"wall sit test"},
@@ -367,6 +374,7 @@ const lastTest=()=>{const k=testKeys();return k.length?Object.assign({date:k[k.l
 const daysSinceTest=()=>{const t=lastTest();return t?Math.floor((parse(todayKey())-parse(t.date))/864e5):null};
 const num=v=>v===""||v==null||isNaN(+v)?null:+v;
 const gDiff=t=>t&&num(t.girthR)!==null&&num(t.girthL)!==null?+(t.girthR-t.girthL).toFixed(1):null;
+const atro=(t,k)=>t&&num(t[k+"R"])!==null&&num(t[k+"L"])!==null?+(t[k+"L"]-t[k+"R"]).toFixed(1):null;
 const lsi=(r,l)=>num(r)!==null&&num(l)?Math.round(r/l*100):null;
 const CRIT={
 1:[
@@ -379,6 +387,7 @@ const CRIT={
  {id:"a",auto:true,t:"آخر ٧ تسجيلات: الألم ٢ أو أقل",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.pain<=2)}},
  {id:"c",auto:true,t:"١٦ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=16},
  {id:"h",auto:true,t:"آخر اختبار: الاتزان والنزول من درجة ٨٥٪ أو أكتر من الرجل السليمة",f:()=>{const t=lastTest();if(!t)return false;const a=lsi(t.balR,t.balL),b=lsi(t.stepR,t.stepL);return a!==null&&b!==null&&a>=85&&b>=85}},
+ {id:"t",auto:true,t:"آخر اختبار: الفخذ اليمين أصغر بـ ١ سم أو أقل",f:()=>{const v=atro(lastTest(),"thigh");return v!==null&&v<=1}},
  {id:"s2",t:"في الليج بريس برجل واحدة، اليمين بيشيل ٨٠٪ أو أكتر من وزن الشمال"},
  {id:"pt2",t:"أخصائي العلاج الطبيعي موافق إنك تنتقل"}]
 };
@@ -431,7 +440,7 @@ function weightRow(id,top){
 }
 function renderHeader(){
   const w=weekPostOp();
-  $("hdrPill").textContent="المرحلة "+ar(S.phase)+(w!==null?" · الأسبوع "+ar(w)+" بعد العملية":"");
+  $("hdrPill").textContent="المرحلة "+ar(S.phase)+(w!==null?" · الأسبوع "+ar(w):"");
 }
 function renderToday(){
   const now=new Date(),k=todayKey(),dow=now.getDay(),adv=loadAdvice(),light=adv.cls==="warn";
@@ -464,6 +473,7 @@ function renderToday(){
    <h3>الأسبوع</h3>
    <div class="week">${week}</div>
    <div class="progress"><span>${ar(n)}/${ar(uniq.length)} تمرين</span><div class="bar"><i style="width:${uniq.length?n/uniq.length*100:0}%"></i></div></div>
+   ${medialAdvice()}
    ${officeCard(light)}
    </div><div class="mainc">
    ${n===uniq.length&&n>0?`<div class="banner ok"><b>برافو، خلصت تمرين النهارده ✓</b>متنساش تسجّل حالتك بالليل، أو بكرة الصبح.</div>`:""}
@@ -486,6 +496,9 @@ function renderLog(){
     <div class="scale"><span>٠ مفيش</span><span>٥ متوسط</span><span>١٠ شديد</span></div>
     <label class="f">الورم</label>
     <div class="seg" id="lgSw">${SWELL_LBL.map((t,i)=>`<button type="button" data-v="${i}" aria-pressed="${L.sw===i}">${t}</button>`).join("")}</div>
+    <label class="f">مكان الألم (اختار كل اللي ينطبق)</label>
+    <div class="locs" id="lgLoc">${LOCS.map(([k,t])=>`<button type="button" data-v="${k}" aria-pressed="${(L.loc||[]).includes(k)}">${t}</button>`).join("")}</div>
+    <div class="muted small">سيبها فاضية لو مفيش ألم.</div>
     <label class="f">فرد الركبة</label>
     <div class="seg two" id="lgExt"><button type="button" data-v="1" aria-pressed="${L.ext===1}">بتتفرد للآخر</button><button type="button" data-v="0" aria-pressed="${L.ext===0}">ناقصة شوية</button></div>
     <label class="f" for="lgFlex">ثني الركبة بالدرجات (اختياري)</label>
@@ -500,16 +513,17 @@ function renderLog(){
    <div class="card chartbox">${chart()}</div>
    <h3>آخر التسجيلات</h3>
    <div class="card">${logs.length?logs.slice(0,20).map(x=>`<div class="logrow"><span class="muted">${ar(x.date.slice(5).replace("-","/"))}</span>
-     <span>ألم <b>${ar(x.pain)}</b> · ورم ${SWELL_LBL[x.sw]}${x.flex?` · ثني ${ar(x.flex)}°`:""}${x.note?`<div class="muted small">${esc(x.note)}</div>`:""}</span>
+     <span>ألم <b>${ar(x.pain)}</b> · ورم ${SWELL_LBL[x.sw]}${(x.loc||[]).length?` · ${x.loc.map(k=>LOC_LBL[k]).join("، ")}`:""}${x.flex?` · ثني ${ar(x.flex)}°`:""}${x.note?`<div class="muted small">${esc(x.note)}</div>`:""}</span>
      <span class="dot" style="background:${x.pain<=3?"var(--ok)":x.pain<=5?"var(--gold)":"var(--bad)"}"></span></div>`).join(""):`<div class="muted">لسه مفيش تسجيلات. أول تسجيل هيظهر هنا.</div>`}</div></div></div>`;
   const ls=$("lgSw"),le=$("lgExt");
-  const st={sw:L.sw,ext:L.ext};
+  const st={sw:L.sw,ext:L.ext,loc:(L.loc||[]).slice()};
+  $("lgLoc").onclick=e=>{const b=e.target.closest("button");if(!b)return;const k=b.dataset.v,i=st.loc.indexOf(k);if(i<0)st.loc.push(k);else st.loc.splice(i,1);b.setAttribute("aria-pressed",i<0)};
   ls.onclick=e=>{const b=e.target.closest("button");if(!b)return;st.sw=+b.dataset.v;[...ls.children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
   le.onclick=e=>{const b=e.target.closest("button");if(!b)return;st.ext=+b.dataset.v;[...le.children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
   $("lgPain").oninput=e=>$("painV").textContent=ar(e.target.value);
   $("lgDate").onchange=e=>{if(e.target.value){logDate=e.target.value;renderLog()}};
   $("lgSave").onclick=()=>{
-    S.logs[logDate]={pain:+$("lgPain").value,sw:st.sw,ext:st.ext,flex:$("lgFlex").value.trim(),note:$("lgNote").value.trim()};
+    S.logs[logDate]={pain:+$("lgPain").value,sw:st.sw,ext:st.ext,flex:$("lgFlex").value.trim(),note:$("lgNote").value.trim(),loc:st.loc.slice()};
     save();toast("اتسجل ✓");renderLog();renderHeader();
   };
 }
@@ -577,7 +591,7 @@ function renderProgress(){
   if(testOpen){
     $("v-progress").querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>toggleSW(b.dataset.sw,b));
     $("v-progress").querySelectorAll("[data-cd]").forEach(b=>b.onclick=()=>startTimer(30,"النزول من درجة · عدّ المرات"));
-    $("tSave").onclick=()=>{stopSW();const t={};["girthR","girthL","balR","balL","wall","stepR","stepL"].forEach(f=>{const v=$("tf_"+f).value.trim();if(v!=="")t[f]=+v});
+    $("tSave").onclick=()=>{stopSW();const t={};["thighR","thighL","calfR","calfL","girthR","girthL","balR","balL","wall","stepR","stepL"].forEach(f=>{const v=$("tf_"+f).value.trim();if(v!=="")t[f]=+v});
       if(!Object.keys(t).length){toast("دخّل نتيجة اختبار واحد على الأقل");return}
       S.tests=S.tests||{};S.tests[todayKey()]=t;save();testOpen=false;toast("الاختبار اتحفظ ✓");renderProgress();renderToday()};
   }
@@ -586,6 +600,13 @@ function renderProgress(){
   const adv=$("advance");if(adv)adv.onclick=()=>{S.phase++;S.phaseStart=todayKey();save();toast("انتقلت للمرحلة "+ar(S.phase));renderAll()};
   const bk=$("back");if(bk)bk.onclick=()=>{if(bk.dataset.c){S.phase--;S.phaseStart=todayKey();save();renderAll()}else{bk.dataset.c=1;bk.textContent="اضغط تاني للتأكيد"}};
   $("v-progress").querySelectorAll("[data-crit]").forEach(cb=>cb.onchange=()=>{S.checks[S.phase]=S.checks[S.phase]||{};S.checks[S.phase][cb.dataset.crit]=cb.checked;save();renderProgress()});
+}
+function medialAdvice(){
+  const from=dk(addDays(new Date(),-7)),med=Object.keys(S.logs).filter(k=>k>=from&&(S.logs[k].loc||[]).includes("in"));
+  if(med.length<2)return "";
+  const curl=med.filter(k=>[k,dk(addDays(parse(k),-1))].some(d=>S.done[d]&&S.done[d].ids&&S.done[d].ids.hamcurl)).length;
+  if(curl>=2)return `<div class="banner warn"><b>الوجع الداخلي بيظهر بعد الليج كيرل</b>اتكرر ${ar(curl)} مرات الأسبوع ده في أيام فيها ليج كيرل أو بعدها بيوم. خفّف وزنه ٣٠٪ وقصّر المدى، ولو الوجع فضل، شيله الأسبوع ده وقول للأخصائي.</div>`;
+  return `<div class="banner info"><b>الوجع الداخلي اتكرر ${ar(med.length)} مرات الأسبوع ده</b>ركّز على تمارين الفخذ الأمامي والحوض، وخفّف أي تمرين بتحس إنه بيزوّده. ولو مستمر، قول للأخصائي.</div>`;
 }
 let testOpen=false,swRun=null,officeOpen=false,officeIds={};
 function officeCard(light){
@@ -613,11 +634,14 @@ function toggleSW(f,btn){
 }
 function chip(ok,txt){return `<span class="tchip ${ok===null?"":ok?"good":"bad"}">${txt}</span>`}
 function testSummary(){
-  const t=lastTest();if(!t)return `<div class="muted small">لسه معملتش اختبار. الاختبار بيقيس الورم والاتزان والقوة بالأرقام، وبيتعمل مرة في الأسبوع. محتاج شريط قياس قماش وساعة التطبيق.</div>`;
-  const d=daysSinceTest(),g=gDiff(t),b=lsi(t.balR,t.balL),st=lsi(t.stepR,t.stepL);
+  const t=lastTest();if(!t)return `<div class="muted small">لسه معملتش اختبار. الاختبار بيقيس ضمور العضلات والاتزان والقوة بالأرقام، وبيتعمل مرة في الأسبوع. محتاج شريط قياس قماش وساعة التطبيق.</div>`;
+  const d=daysSinceTest(),g=gDiff(t),b=lsi(t.balR,t.balL),st=lsi(t.stepR,t.stepL),th=atro(t,"thigh"),ca=atro(t,"calf");
+  const at=v=>v===null?"":chip(v<=1,v<=1?"قريب من السليمة":v<=2?"ضمور بسيط":"ضمور واضح");
   return `<div class="small muted">آخر اختبار: ${d===0?"النهارده":"من "+ar(d)+" يوم"}</div>
    <div class="tgrid">
-    <div><span>فرق المقاس</span><b>${g===null?"—":ar((g>0?"+":"")+g)+" سم"}</b>${g===null?"":chip(g<=1,g<=1?"كويس":g<=2?"ورم خفيف":"ورم واضح")}</div>
+    <div><span>الفخذ اليمين أصغر بـ</span><b>${th===null?"—":ar(th)+" سم"}</b>${at(th)}</div>
+    <div><span>السمانة اليمين أصغر بـ</span><b>${ca===null?"—":ar(ca)+" سم"}</b>${at(ca)}</div>
+    <div><span>ورم الركبة (فرق المقاس)</span><b>${g===null?"—":ar((g>0?"+":"")+g)+" سم"}</b>${g===null?"":chip(g<=1,g<=1?"كويس":g<=2?"ورم خفيف":"ورم واضح")}</div>
     <div><span>الاتزان (يمين/شمال)</span><b>${b===null?"—":ar(b)+"٪"}</b>${b===null?"":chip(b>=80,b>=90?"ممتاز":b>=80?"كويس":"محتاج شغل")}</div>
     <div><span>قعدة الحيطة</span><b>${num(t.wall)===null?"—":ar(t.wall)+" ث"}</b>${num(t.wall)===null?"":chip(t.wall>=45,t.wall>=45?"وصلت للهدف":"الهدف ٤٥ ث")}</div>
     <div><span>النزول (يمين/شمال)</span><b>${st===null?"—":ar(st)+"٪"}</b>${st===null?"":chip(st>=80,st>=90?"ممتاز":st>=80?"كويس":"محتاج شغل")}</div>
@@ -636,20 +660,20 @@ function testForm(){
     <div class="muted small">اللي مقستوش سيبه فاضي. الساعة بتكتب الثواني لوحدها لما تدوس "وقّف".</div></div>`;
 }
 function testTable(){
-  const rows=testKeys().slice().reverse().slice(0,12).map(k=>{const t=S.tests[k],g=gDiff(t),b=lsi(t.balR,t.balL),st=lsi(t.stepR,t.stepL);
-    return `<tr><td>${ar(k.slice(5).replace("-","/"))}</td><td>${g===null?"—":ar(g)}</td><td>${b===null?"—":ar(b)+"٪"}</td><td>${num(t.wall)===null?"—":ar(t.wall)}</td><td>${st===null?"—":ar(st)+"٪"}</td></tr>`}).join("");
-  return `<div class="tablebox"><table class="ttable"><thead><tr><th>التاريخ</th><th>فرق المقاس (سم)</th><th>الاتزان</th><th>الحيطة (ث)</th><th>النزول</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const rows=testKeys().slice().reverse().slice(0,12).map(k=>{const t=S.tests[k],g=gDiff(t),b=lsi(t.balR,t.balL),st=lsi(t.stepR,t.stepL),th=atro(t,"thigh"),ca=atro(t,"calf");
+    return `<tr><td>${ar(k.slice(5).replace("-","/"))}</td><td>${th===null?"—":ar(th)}</td><td>${ca===null?"—":ar(ca)}</td><td>${g===null?"—":ar(g)}</td><td>${b===null?"—":ar(b)+"٪"}</td><td>${num(t.wall)===null?"—":ar(t.wall)}</td><td>${st===null?"—":ar(st)+"٪"}</td></tr>`}).join("");
+  return `<div class="tablebox"><table class="ttable"><thead><tr><th>التاريخ</th><th>ضمور الفخذ (سم)</th><th>ضمور السمانة (سم)</th><th>ورم الركبة (سم)</th><th>الاتزان</th><th>الحيطة (ث)</th><th>النزول</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function girthChart(){
-  const pts=testKeys().map(k=>[k,gDiff(S.tests[k])]).filter(x=>x[1]!==null).slice(-12);
-  if(pts.length<2)return `<div class="muted small" style="margin-bottom:8px">رسم فرق المقاس هيظهر بعد اختبارين.</div>`;
+  const pts=testKeys().map(k=>[k,atro(S.tests[k],"thigh")]).filter(x=>x[1]!==null).slice(-12);
+  if(pts.length<2)return `<div class="muted small" style="margin-bottom:8px">رسم ضمور الفخذ هيظهر بعد اختبارين فيهم مقاس الفخذ.</div>`;
   const W=600,H=170,pl=34,pr=14,pt=12,pb=26,mx=Math.max(3,...pts.map(p=>p[1]));
   const X=i=>pl+i/(pts.length-1)*(W-pl-pr),Y=v=>pt+(1-Math.max(0,v)/mx)*(H-pt-pb);
   let g="";[0,1,2,3].filter(v=>v<=mx).forEach(v=>g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" ${v===1?'stroke-dasharray="4 4"':""}/><text x="${pl-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${ar(v)}</text>`);
   const line=pts.map((p,i)=>X(i)+","+Y(p[1])).join(" ");
   const dots=pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p[1])}" r="${i===pts.length-1?5:3.5}" fill="${p[1]<=1?"var(--ok)":p[1]<=2?"var(--gold)":"var(--bad)"}"/>`).join("");
   const lab=pts.map((p,i)=>`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)">${ar(+p[0].slice(8)+"/"+(+p[0].slice(5,7)))}</text>`).join("");
-  return `<div class="small" style="font-weight:700">فرق مقاس الركبة (سم) · الهدف تحت الخط المتقطع</div><div class="chartbox"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:300px" role="img" aria-label="فرق المقاس">${g}<polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>${dots}${lab}</svg></div>`;
+  return `<div class="small" style="font-weight:700">الفخذ اليمين أصغر من الشمال بكام سم · الهدف تحت الخط المتقطع</div><div class="chartbox"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:300px" role="img" aria-label="ضمور الفخذ">${g}<polyline points="${line}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>${dots}${lab}</svg></div>`;
 }
 let libF=0;
 function renderLibrary(){
@@ -691,6 +715,13 @@ function renderMore(){
     <li>غيّر حاجة واحدة بس كل أسبوع: يا التكرارات، يا الوزن، يا مدة الثبات.</li>
     <li>ممنوع القرفصاء العميقة، وممنوع ثني الركبة أكتر من ٩٠° وهي شايلة وزن.</li>
     <li>ممنوع اللف على الرجل، والجري والقفز، إلا بإذن الدكتور.</li></ul></div>
+   <h3>الوجع الداخلي تحت الركبة</h3>
+   <div class="card"><ul class="rules">
+    <li>نام على جنبك ومخدة بين الركبتين، عشان الأوتار اللي في الجانب الداخلي متتضغطش طول الليل.</li>
+    <li>متحطش رجل على رجل وانت قاعد.</li>
+    <li>في السلم، انزل بالرجل اليمين الأول، وامسك الدرابزين.</li>
+    <li>لو الوجع زاد بعد الليج كيرل، أو أي تمرين فيه ضم الرجلين، خفّف وزنه أو شيله، وقول للأخصائي.</li>
+    <li>سجّل مكان الألم في التسجيل اليومي، عشان التطبيق يربط الوجع بالتمارين.</li></ul></div>
    <h3>في الحياة اليومية</h3>
    <div class="card"><ul class="rules">
     <li>في السلم: اطلع بالرجل السليمة الأول، وانزل بالرجل اليمين الأول.</li>
