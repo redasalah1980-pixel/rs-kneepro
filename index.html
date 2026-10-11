@@ -148,6 +148,10 @@ textarea{min-height:80px;resize:vertical}
   #v-library .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   nav.tabs{grid-template-columns:repeat(5,minmax(0,140px));justify-content:center}
 }
+.wrow{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
+.wins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.wins label{display:flex;flex-direction:column;gap:3px}
+.wins input{padding:8px 10px}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
 .chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:.88rem}
 .chips button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
@@ -284,6 +288,10 @@ seat_ext:{n:"فرد الركبة بالأستك وانت قاعد",how:"أستك
 seat_abd:{n:"فتح الركبتين بالأستك وانت قاعد",how:"أستك فوق الركبتين والقدمين على الأرض. افتح الركبتين لبرا وثبّت ثانيتين.",mis:"",q:"seated hip abduction band"},
 stand_abd:{n:"رفع الرجل لجنب بالأستك",how:"اقف ماسك في المكتب، والأستك حوالين الكاحلين. ارفع رجلك اليمين لجنب ببطء، وجسمك مفرود.",mis:"تميل بجسمك ناحية الرجل التانية.",q:"standing hip abduction resistance band"},
 stand_ext:{n:"شد الرجل لورا بالأستك",how:"اقف ماسك في المكتب، والأستك حوالين الكاحلين. شد رجلك اليمين لورا وهي مفرودة.",mis:"تقوّس ضهرك.",q:"standing hip extension resistance band"},
+spanish:{n:"سكوات إسباني (ثبات)",how:"اربط أستك عريض وقوي في حاجة ثابتة، ولفّه ورا الركبتين. ارجع لورا لحد ما الأستك يشد، وانزل نص قعدة (٤٥–٦٠°) والساق عمودية على الأرض، وثبّت. من أحسن التمارين لتقوية وتر الركبة وتهدية الألم.",mis:"الساق تميل لقدّام، أو الأستك يرتخي.",q:"spanish squat isometric band"},
+calf_bent:{n:"رفع الكعب والركبة مثنية",how:"اقف والركبة مثنية بسيط (٢٠–٣٠°)، واطلع على صوابعك ببطء وانزل في ٣ ثواني. ده بيشغّل عضلة السمانة العميقة (السوليس) اللي بتضمر بعد العمليات.",mis:"تفرد الركبة أثناء الحركة.",q:"bent knee calf raise soleus"},
+seatcalf:{n:"جهاز السمانة وانت قاعد",how:"الركبة مثنية ٩٠° والوزن فوق الفخذ. اطلع للآخر، وانزل ببطء لحد ما تحس بشد.",mis:"",q:"seated calf raise machine"},
+hipthrust:{n:"هيب ثرست",how:"ضهرك على البنش، وبار أو دامبل على الحوض. ارفع الحوض لحد ما جسمك يبقى مستقيم من الكتف للركبة، وثبّت ثانية فوق.",mis:"تقوّس ضهرك فوق بدل ما تشد الإلية.",q:"hip thrust form"},
 ice:{n:"ثلج ورفع الرجل",how:"حط فوطة بين الثلج والجلد، وارفع الرجل أعلى من مستوى القلب.",mis:"تحط الثلج على الجلد على طول.",q:"ice and elevation knee swelling"}
 };
 
@@ -293,16 +301,17 @@ const WARM={
  gym:[["bike","٨–١٠ دقايق",600],["patella","دقيقتين",120],["heelslide","٢×١٥",0]]
 };
 const COOL=[["ham_st","٣×٣٠ ث",30],["calf_st","٣×٣٠ ث",30],["quad_st","٢×٣٠ ث",30],["ice","١٥ دقيقة (لو فيه ورم)",900]];
+const W=t=>({w:1,top:t});
 const PHASES={
-1:{name:"تهدئة وتنشيط",goal:"تقليل الورم وتنشيط عضلة الفخذ، من غير ما الخياطة تتعرض لضغط.",
- home:[["quadset","٣×١٥ · ثبات ٥ ث",5],["slr","٣×١٠",0],["tke","٣×١٥",0],["bridge","٣×١٢",0],["sideabd","٣×١٢",0],["clam","٣×١٥",0],["calf","٣×١٥",0],["balance","٣×٢٠ ث · ماسك حاجة",20]],
- gym:[["legpress","٣×١٢ · مدى ٠–٦٠° · وزن خفيف",0],["abd","٣×١٥",0],["add","٣×١٥",0],["hamcurl","٣×١٠ · خفيف جدًا",0],["calfm","٣×١٥",0],["slr","٣×١٢",0],["tke","٣×١٥",0],["balance","٣×٢٠ ث",20]]},
-2:{name:"تقوية",goal:"بناء قوة الفخذ والحوض في مدى آمن، والثني أقل من ٩٠°.",
- home:[["slr_w","٣×١٢",0],["tke","٣×١٥",0],["sl_bridge","٣×١٠",0],["bandwalk","٣×١٠ خطوات لكل اتجاه",0],["wallsit","٤×٣٠ ث · ٤٥–٦٠°",30],["boxsquat","٣×١٢",0],["stepup","٣×١٠ · درجة ١٥ سم",0],["sl_calf","٣×١٢",0],["balance2","٣×٣٠ ث",30]],
- gym:[["legpress","٣×١٢ · مدى ٠–٩٠°",0],["sl_legpress","٣×١٠",0],["legext","٣×١٢ · ٩٠–٣٠°",0],["hamcurl","٣×١٢",0],["abd","٣×١٥",0],["add","٣×١٥",0],["rdl","٣×١٠",0],["lat_stepdown","٣×٨",0],["calfm","٣×١٥",0]]},
-3:{name:"قوة ووظيفة",goal:"قوة واتزان على رجل واحدة، وتجهيز الركبة للأنشطة العادية.",
- home:[["sl_bridge","٣×١٥",0],["bandwalk","٣×١٥ خطوة",0],["wallsit","٤×٤٥ ث",45],["stepup","٣×١٢ · درجة ٢٠ سم",0],["fwd_stepdown","٣×١٠",0],["split","٣×١٠ لكل رجل",0],["sl_rdl","٣×١٠",0],["balance2","٣×٤٥ ث",45],["sl_calf","٣×١٥",0]],
- gym:[["elliptical","١٠–١٥ دقيقة",900],["legpress","٤×١٠ · ٠–٩٠° · وزن أتقل",0],["sl_legpress","٣×١٢",0],["legext","٣×١٢",0],["hamcurl","٣×١٢",0],["rdl","٣×١٠",0],["split","٣×١٠ · بدامبلز",0],["lat_stepdown","٣×١٢",0],["calfm","٣×١٥",0]]}
+1:{name:"تأسيس القوة",goal:"ترجّع القوة الأساسية للفخذ والسمانة والحوض بأوزان متوسطة ونزول بطيء، وتقوّي الأوتار بتمارين الثبات.",
+ home:[["spanish","٥×٣٠ ث",30],["wallsit","٤×٤٠ ث · ٤٥–٦٠°",40],["sl_bridge","٣×١٢",0],["stepup","٣×١٠ · درجة ٢٠ سم · نزول ٣ ث",0],["lat_stepdown","٣×١٠",0],["sl_rdl","٣×١٠",0],["bandwalk","٣×١٢ خطوة",0],["sl_calf","٣×١٥ · نزول ٣ ث",0],["calf_bent","٣×١٥",0],["balance2","٣×٣٠ ث",30]],
+ gym:[["legpress","٣×١٠–١٢ · ٠–٩٠° · نزول ٣ ث",0,W(12)],["sl_legpress","٣×١٠–١٢ · ابدأ باليمين",0,W(12)],["legext","٣×١٠–١٢ · ٩٠–٣٠°",0,W(12)],["hamcurl","٣×١٠–١٢",0,W(12)],["rdl","٣×١٠",0,W(10)],["abd","٣×١٥",0,W(15)],["calfm","٣×١٢–١٥",0,W(15)],["seatcalf","٣×١٥",0,W(15)],["spanish","٤×٣٠ ث",30],["lat_stepdown","٣×١٠",0]]},
+2:{name:"بناء العضلة",goal:"تزوّد حجم العضلة وقوتها بأوزان أتقل، ٤ مجموعات، وآخر عدتين في كل مجموعة صعبين.",
+ home:[["spanish","٥×٤٥ ث",45],["sl_bridge","٤×١٢",0],["stepup","٤×١٠ · بشنطة ضهر فيها وزن",0],["fwd_stepdown","٣×١٠",0],["split","٣×١٠ · نزول ربع لنص المسافة",0],["sl_rdl","٣×١٠ · بوزن في الإيد",0],["bandwalk","٣×١٥ خطوة",0],["sl_calf","٤×١٥",0],["calf_bent","٤×١٥",0],["balance2","٣×٤٥ ث",45]],
+ gym:[["legpress","٤×٨–١٢ · نزول ٣ ث",0,W(12)],["sl_legpress","٤×١٠",0,W(10)],["legext","٤×١٠–١٢",0,W(12)],["hamcurl","٤×١٠–١٢",0,W(12)],["rdl","٤×٨–١٠",0,W(10)],["hipthrust","٣×١٠",0,W(10)],["split","٣×١٠ · بدامبلز",0,W(10)],["calfm","٤×١٠–١٢",0,W(12)],["seatcalf","٤×١٢–١٥",0,W(15)],["spanish","٤×٤٥ ث",45]]},
+3:{name:"قوة ووظيفة",goal:"قوة على رجل واحدة وأوزان أتقل، وتجهيز الركبة للأنشطة والرياضة بإذن الدكتور.",
+ home:[["sl_bridge","٤×١٥",0],["stepup","٤×١٢ · درجة عالية",0],["fwd_stepdown","٤×١٠",0],["split","٣×١٢",0],["sl_rdl","٤×١٠ · بوزن",0],["bandwalk","٣×١٥ خطوة",0],["sl_calf","٤×٢٠",0],["calf_bent","٤×١٥",0],["balance2","٣×٦٠ ث",60]],
+ gym:[["legpress","٤×٦–١٠ · وزن تقيل",0,W(10)],["sl_legpress","٤×٨–١٠",0,W(10)],["legext","٤×٨–١٠",0,W(10)],["hamcurl","٤×٨–١٠",0,W(10)],["rdl","٤×٦–٨",0,W(8)],["hipthrust","٤×٨–١٠",0,W(10)],["split","٤×٨–١٠ · بدامبلز",0,W(10)],["lat_stepdown","٣×١٢",0],["calfm","٤×٨–١٢",0,W(12)],["seatcalf","٤×١٢",0,W(12)]]}
 };
 const REST=[["walk","٢٠–٣٠ دقيقة",0]];
 /* office session: [id, dose, hold, lightOK] */
@@ -314,7 +323,7 @@ const OFFICE={
 
 /* ============ State ============ */
 const KEY="rs-kneepro-v1";
-const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{},tests:{},office:{}});
+const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{},tests:{},office:{},wlog:{}});
 let S;
 try{S=Object.assign(DEF(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=DEF()}
 const saveQuiet=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -351,7 +360,7 @@ const TESTS=[
  {k:"girth",n:"مقاس الركبة",u:"سم",how:"اقعد والرجل مفرودة ومرتاحة، ولف شريط القياس حوالين الركبة فوق حافة الصابونة العليا على طول. قيس الرجلين، ويفضّل الصبح، وفي نفس المكان كل مرة.",q:"knee girth measurement swelling tape"},
  {k:"bal",n:"الاتزان على رجل واحدة",u:"ث",how:"اقف على رجل واحدة جنب حيطة، وإيديك على وسطك وعينك مفتوحة. الوقت بيقف أول ما الرجل التانية تلمس الأرض أو تسند بإيدك. أقصى وقت ٦٠ ثانية.",q:"single leg stance balance test"},
  {k:"wall",n:"قعدة الحيطة",u:"ث",how:"ضهرك على الحيطة، والركبتين على زاوية ٤٥–٦٠° بس. وقّف لما تتعب، أو لو الألم عدّى ٣ من ١٠.",q:"wall sit test"},
- {k:"step",n:"النزول من درجة · ٣٠ ثانية",u:"مرة",how:"اقف على رجل واحدة على درجة ١٥ سم، ونزّل كعب الرجل التانية يلمس الأرض وارجع. عدّ المرات الصح في ٣٠ ثانية. ده بيبدأ من المرحلة ٢، فلو انت في المرحلة ١ سيبه فاضي.",q:"lateral step down test 30 seconds"}
+ {k:"step",n:"النزول من درجة · ٣٠ ثانية",u:"مرة",how:"اقف على رجل واحدة على درجة ١٥ سم، ونزّل كعب الرجل التانية يلمس الأرض وارجع. عدّ المرات الصح في ٣٠ ثانية. لو الوجع زاد أثناء الاختبار، وقّف وسيبه فاضي.",q:"lateral step down test 30 seconds"}
 ];
 const testKeys=()=>Object.keys(S.tests||{}).sort();
 const lastTest=()=>{const k=testKeys();return k.length?Object.assign({date:k[k.length-1]},S.tests[k[k.length-1]]):null};
@@ -362,20 +371,16 @@ const lsi=(r,l)=>num(r)!==null&&num(l)?Math.round(r/l*100):null;
 const CRIT={
 1:[
  {id:"a",auto:true,t:"آخر ٧ تسجيلات: الألم ٣ أو أقل",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.pain<=3)}},
- {id:"b",auto:true,t:"آخر ٧ تسجيلات: الورم مفيش أو خفيف",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.sw<=1)}},
  {id:"c",auto:true,t:"١٢ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=12},
- {id:"d",t:"بتعمل رفع الرجل مفرودة ١٥ مرة، والركبة مفرودة طول الوقت"},
- {id:"e",t:"الركبة بتتفرد للآخر زي الرجل التانية"},
- {id:"g",auto:true,t:"آخر اختبار: فرق مقاس الركبة ١ سم أو أقل",f:()=>{const d=gDiff(lastTest());return d!==null&&d<=1}},
- {id:"f",t:"الدكتور أو أخصائي العلاج الطبيعي موافق إنك تنتقل"}],
+ {id:"w",auto:true,t:"آخر اختبار: قعدة الحيطة ٤٥ ثانية أو أكتر",f:()=>{const t=lastTest();return !!t&&num(t.wall)>=45}},
+ {id:"s1",t:"بتنزل من على درجة ٢٠ سم ١٠ مرات بتحكم، والركبة مش بتلف لجوه"},
+ {id:"pt1",t:"أخصائي العلاج الطبيعي موافق إنك تزوّد الأوزان"}],
 2:[
  {id:"a",auto:true,t:"آخر ٧ تسجيلات: الألم ٢ أو أقل",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.pain<=2)}},
- {id:"b",auto:true,t:"آخر ٧ تسجيلات: مفيش ورم",f:()=>{const l=recentLogs(7);return l.length>=7&&l.every(x=>x.sw===0)}},
- {id:"c",auto:true,t:"١٥ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=15},
- {id:"d",t:"بتنزل من على درجة ١٥ سم بتحكم، والركبة مش بتلف لجوه"},
- {id:"w",auto:true,t:"آخر اختبار: قعدة الحيطة ٤٥ ثانية أو أكتر",f:()=>{const t=lastTest();return !!t&&num(t.wall)>=45}},
- {id:"h",auto:true,t:"آخر اختبار: الاتزان والنزول من درجة ٨٠٪ أو أكتر من الرجل السليمة",f:()=>{const t=lastTest();if(!t)return false;const a=lsi(t.balR,t.balL),b=lsi(t.stepR,t.stepL);return a!==null&&b!==null&&a>=80&&b>=80}},
- {id:"f",t:"الدكتور أو أخصائي العلاج الطبيعي موافق إنك تنتقل"}]
+ {id:"c",auto:true,t:"١٦ يوم تمرين على الأقل في المرحلة دي",f:()=>workoutsSince(S.phaseStart)>=16},
+ {id:"h",auto:true,t:"آخر اختبار: الاتزان والنزول من درجة ٨٥٪ أو أكتر من الرجل السليمة",f:()=>{const t=lastTest();if(!t)return false;const a=lsi(t.balR,t.balL),b=lsi(t.stepR,t.stepL);return a!==null&&b!==null&&a>=85&&b>=85}},
+ {id:"s2",t:"في الليج بريس برجل واحدة، اليمين بيشيل ٨٠٪ أو أكتر من وزن الشمال"},
+ {id:"pt2",t:"أخصائي العلاج الطبيعي موافق إنك تنتقل"}]
 };
 function critStatus(p){return (CRIT[p]||[]).map(c=>({...c,ok:c.auto?c.f():!!(S.checks[p]&&S.checks[p][c.id])}))}
 
@@ -406,7 +411,7 @@ let toastT;function toast(m){$("toast").textContent=m;$("toast").hidden=false;cl
 
 /* ============ Views ============ */
 function exCard(it,interactive,doneMap,attr){attr=attr||"ex";
-  const [id,dose,hold]=it,x=LIB[id],c=interactive&&doneMap[id];
+  const [id,dose,hold]=it,meta=(it[3]&&typeof it[3]==="object")?it[3]:null,x=LIB[id],c=interactive&&doneMap[id];
   const timerLbl=hold>=60?"⏱ "+ar(Math.round(hold/60))+" د":"⏱ "+ar(hold)+" ث";
   return `<div class="ex${c?" done":""}">
     ${interactive?`<input type="checkbox" data-${attr}="${id}" ${c?"checked":""} aria-label="${esc(x.n)}">`:`<span></span>`}
@@ -414,7 +419,15 @@ function exCard(it,interactive,doneMap,attr){attr=attr||"ex";
     ${x.mis?`<div class="mis">⚠ ${x.mis}</div>`:""}
     <div class="acts">${hold?`<button class="btn" type="button" data-timer="${hold}" data-lbl="${esc(x.n)}">${timerLbl}</button>`:""}
     ${interactive&&!hold?`<button class="btn" type="button" data-timer="60" data-lbl="راحة بين المجموعات">⏱ راحة ٦٠ ث</button>`:""}
-    <a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ فيديو</a></div></div></div>`;
+    <a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ فيديو</a></div>${interactive&&attr==="ex"&&meta&&meta.w?weightRow(id,meta.top):""}</div></div>`;
+}
+function weightRow(id,top){
+  const k=todayKey(),L=(S.wlog||{})[id]||{},cur=L[k]||{};
+  const prevK=Object.keys(L).filter(d=>d<k).sort().pop(),prev=prevK?L[prevK]:null;
+  let hint="سجّل الوزن وأقل عدد عدّات عملته في أي مجموعة.";
+  if(prev){const pp=S.logs[prevK],okPain=!pp||pp.pain<=3;
+    hint="آخر مرة: "+ar(prev.kg)+" كجم × "+ar(prev.r)+" · "+(prev.r>=top&&okPain?"<b>زوّد ٢٫٥–٥ كجم النهارده</b>":prev.r>=top?"كمّلت العدد بس كان فيه ألم، فثبّت الوزن":"حاول توصل "+ar(top)+" عدة بنفس الوزن")}
+  return `<div class="wrow"><div class="small muted">${hint}</div><div class="wins"><label><span class="small">الوزن (كجم)</span><input type="number" inputmode="decimal" step="0.5" min="0" data-wkg="${id}" value="${cur.kg!=null?cur.kg:""}" placeholder="${prev?prev.kg:""}"></label><label><span class="small">أقل عدد عدّات</span><input type="number" inputmode="numeric" min="0" data-wr="${id}" value="${cur.r!=null?cur.r:""}" placeholder="${top}"></label></div></div>`;
 }
 function renderHeader(){
   const w=weekPostOp();
@@ -715,13 +728,14 @@ function prune(o){if(Array.isArray(o)){const x={};o.forEach((v,i)=>{if(v!=null)x
   if(o&&typeof o==="object"){const r={};Object.keys(o).sort().forEach(k=>{const v=prune(o[k]);if(v===undefined||v===null)return;if(typeof v==="object"&&!Object.keys(v).length)return;r[k]=v});return r}
   return o}
 const canon=o=>JSON.stringify(prune(JSON.parse(JSON.stringify(o))));
-function normalize(o){o=Object.assign(DEF(),prune(o||{}));["logs","done","tests","office","override","checks"].forEach(f=>{o[f]=o[f]||{}});
+function normalize(o){o=Object.assign(DEF(),prune(o||{}));["logs","done","tests","office","override","checks","wlog"].forEach(f=>{o[f]=o[f]||{}});
   Object.keys(o.done).forEach(k=>{o.done[k].ids=o.done[k].ids||{}});return o}
 function merge(a,b){
   const newer=(!!a.synced!==!!b.synced)?(a.synced?a:b):((a.updatedAt||0)>=(b.updatedAt||0)?a:b),older=newer===a?b:a;
   const out=JSON.parse(JSON.stringify(newer));
   ["logs","tests","override"].forEach(f=>{out[f]=out[f]||{};Object.keys(older[f]||{}).forEach(k=>{if(!(k in out[f]))out[f][k]=older[f][k]})});
   out.checks=out.checks||{};Object.keys(older.checks||{}).forEach(p=>{out.checks[p]=Object.assign({},older.checks[p],out.checks[p]||{})});
+  out.wlog=out.wlog||{};Object.keys(older.wlog||{}).forEach(id=>{out.wlog[id]=Object.assign({},older.wlog[id],out.wlog[id]||{})});
   out.office=out.office||{};Object.keys(older.office||{}).forEach(k=>{out.office[k]=Math.max(out.office[k]||0,older.office[k]||0)});
   out.done=out.done||{};Object.keys(older.done||{}).forEach(k=>{const o=older.done[k];if(!out.done[k]){out.done[k]=o;return}
     if(out.done[k].t===o.t){const ids=out.done[k].ids=out.done[k].ids||{};Object.keys(o.ids||{}).forEach(i=>{if(o.ids[i])ids[i]=true})}});
@@ -810,6 +824,9 @@ document.addEventListener("click",e=>{
   const g=e.target.closest("[data-go]");if(g){show(g.dataset.go)}
 });
 $("v-today").addEventListener("change",e=>{
+  if(e.target.dataset.wkg||e.target.dataset.wr){const id=e.target.dataset.wkg||e.target.dataset.wr,k=todayKey();S.wlog=S.wlog||{};S.wlog[id]=S.wlog[id]||{};const row=S.wlog[id][k]=S.wlog[id][k]||{};const v=e.target.value.trim();
+    if(e.target.dataset.wkg){if(v==="")delete row.kg;else row.kg=+v}else{if(v==="")delete row.r;else row.r=+v}
+    if(row.kg==null&&row.r==null)delete S.wlog[id][k];save();toast("الوزن اتسجل ✓");return}
   if(e.target.dataset.of){officeIds[e.target.dataset.of]=e.target.checked;renderToday();return}
   if(e.target.dataset.ex){const k=todayKey();S.done[k].ids[e.target.dataset.ex]=e.target.checked;save();renderToday();renderProgress()}
 });
