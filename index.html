@@ -155,7 +155,21 @@ textarea{min-height:80px;resize:vertical}
 .locs{display:flex;flex-wrap:wrap;gap:6px}
 .locs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:.88rem}
 .locs button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
-.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.btag{display:inline-block;font-size:.7rem;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:middle;margin-inline-start:4px}
+.btag.short{background:#e9dcf7;color:#5b2d8e}
+.btag.long{background:var(--gold-soft);color:var(--gold)}
+.subnote{font-size:.8rem;color:var(--muted);margin-top:1px}
+.lvrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.lvchip{font-size:.78rem;font-weight:700;background:var(--gold-soft);color:var(--gold);border-radius:999px;padding:3px 10px}
+.lvrow .btn{padding:4px 10px;font-size:.8rem}
+.fb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.fb button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.82rem;cursor:pointer}
+.fb button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
+.lvhint{margin-top:8px;font-size:.85rem;background:var(--ok-soft);border-radius:10px;padding:8px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lvhint.warn{background:var(--warn-soft)}
+.lvlist{margin:8px 0 0;padding-inline-start:20px;font-size:.82rem;color:var(--muted)}
+.lvlist li.cur{color:var(--ink);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;overflow-x:auto;padding-bottom:4px}
 .chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;white-space:nowrap;cursor:pointer;font-size:.88rem}
 .chips button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel);font-weight:700}
 .logrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:.88rem}
@@ -264,7 +278,7 @@ bridge:{n:"الكوبري",how:"نايم على ضهرك والركبتين مث
 sl_bridge:{n:"الكوبري برجل واحدة",how:"الرجل اليمين على الأرض والتانية مفرودة في الهوا. خلي الحوض مستوي.",mis:"الحوض يميل لجنب.",q:"single leg glute bridge"},
 sideabd:{n:"رفع الرجل جانبيًا",how:"نايم على جنبك. ارفع الرجل اللي فوق وهي مفرودة، وصوابع القدم لقدّام.",mis:"لو الصوابع لافة لفوق، الشغل بيروح على عضلة غير المطلوبة.",q:"side lying hip abduction"},
 clam:{n:"الصدفة بالأستك",how:"حط أستك فوق الركبتين، والقدمين لازقين في بعض. افتح الركبة اللي فوق.",mis:"الحوض يلف لورا.",q:"clamshell exercise band"},
-bandwalk:{n:"مشي جانبي بالأستك",how:"أستك حوالين الكاحلين أو فوق الركبتين. انزل نص قعدة خفيفة، وامشي خطوات جانبية صغيرة.",mis:"الركبة تدخل لجوه.",q:"lateral band walk knee"},
+bandwalk:{n:"مشي جانبي بالأستك",how:"أستك القماش فوق الركبتين. انزل نص قعدة خفيفة، وامشي خطوات جانبية صغيرة، والركبتين زاقين لبرا ضد الأستك.",mis:"الركبة تدخل لجوه.",q:"lateral band walk knee"},
 calf:{n:"رفع الكعبين",how:"على الرجلين: اطلع على صوابعك وانزل ببطء.",mis:"",q:"standing calf raises"},
 sl_calf:{n:"رفع الكعب برجل واحدة",how:"على الرجل اليمين بس، وانت ماسك في الحيطة.",mis:"",q:"single leg calf raise"},
 balance:{n:"الاتزان على رجل واحدة",how:"اقف على اليمين والركبة مثنية بسيط. امسك في حاجة لو محتاج.",mis:"تقفل الركبة وهي مفرودة للآخر.",q:"single leg balance knee rehab"},
@@ -291,21 +305,38 @@ quad_st:{n:"إطالة الفخذ الأمامي",how:"نايم على بطنك 
 seat_quad:{n:"شد الفخذ وانت قاعد",how:"اقعد ومد رجلك اليمين قدامك والكعب على الأرض. شد عضلة الفخذ لحد ما الركبة تتفرد للآخر، وثبّت.",mis:"",q:"seated quad set exercise"},
 seat_ext:{n:"فرد الركبة بالأستك وانت قاعد",how:"أستك حوالين الكاحل ومربوط في رجل الكرسي من ورا. افرد الركبة ببطء من ٩٠° لحد ما تبقى شبه مفرودة، وارجع ببطء.",mis:"لو حسيت بوجع جوه المفصل، قلّل المدى أو شد الأستك أخف.",q:"seated knee extension resistance band"},
 seat_abd:{n:"فتح الركبتين بالأستك وانت قاعد",how:"أستك فوق الركبتين والقدمين على الأرض. افتح الركبتين لبرا وثبّت ثانيتين.",mis:"",q:"seated hip abduction band"},
-stand_abd:{n:"رفع الرجل لجنب بالأستك",how:"اقف ماسك في المكتب، والأستك حوالين الكاحلين. ارفع رجلك اليمين لجنب ببطء، وجسمك مفرود.",mis:"تميل بجسمك ناحية الرجل التانية.",q:"standing hip abduction resistance band"},
+stand_abd:{n:"رفع الرجل لجنب بالأستك",how:"اقف ماسك في المكتب، والأستك فوق الركبتين. ارفع رجلك اليمين لجنب ببطء، وجسمك مفرود.",mis:"تميل بجسمك ناحية الرجل التانية.",q:"standing hip abduction resistance band"},
 stand_ext:{n:"شد الرجل لورا بالأستك",how:"اقف ماسك في المكتب، والأستك حوالين الكاحلين. شد رجلك اليمين لورا وهي مفرودة.",mis:"تقوّس ضهرك.",q:"standing hip extension resistance band"},
 spanish:{n:"سكوات إسباني (ثبات)",how:"اربط أستك عريض وقوي في حاجة ثابتة، ولفّه ورا الركبتين. ارجع لورا لحد ما الأستك يشد، وانزل نص قعدة (٤٥–٦٠°) والساق عمودية على الأرض، وثبّت. من أحسن التمارين لتقوية وتر الركبة وتهدية الألم.",mis:"الساق تميل لقدّام، أو الأستك يرتخي.",q:"spanish squat isometric band"},
 calf_bent:{n:"رفع الكعب والركبة مثنية",how:"اقف والركبة مثنية بسيط (٢٠–٣٠°)، واطلع على صوابعك ببطء وانزل في ٣ ثواني. ده بيشغّل عضلة السمانة العميقة (السوليس) اللي بتضمر بعد العمليات.",mis:"تفرد الركبة أثناء الحركة.",q:"bent knee calf raise soleus"},
 seatcalf:{n:"جهاز السمانة وانت قاعد",how:"الركبة مثنية ٩٠° والوزن فوق الفخذ. اطلع للآخر، وانزل ببطء لحد ما تحس بشد.",mis:"",q:"seated calf raise machine"},
 hipthrust:{n:"هيب ثرست",how:"ضهرك على البنش، وبار أو دامبل على الحوض. ارفع الحوض لحد ما جسمك يبقى مستقيم من الكتف للركبة، وثبّت ثانية فوق.",mis:"تقوّس ضهرك فوق بدل ما تشد الإلية.",q:"hip thrust form"},
+slide_curl:{n:"سحب الكعب بالفوطة (العضلة الخلفية)",how:"نايم على ضهرك على أرض ملسا، والكعبين على فوطة. ارفع وسطك زي الكوبري، وزق الكعبين لقدّام ببطء لحد ما رجلك تتفرد تقريبًا، وبعدين اسحبهم لورا تاني. بيقوّي العضلة الخلفية من غير أجهزة.",mis:"لو حسيت بوجع في الجانب الداخلي تحت الركبة، خفّف المدى أو وقّفه وقول للأخصائي.",q:"sliding hamstring curl towel"},
 ice:{n:"ثلج ورفع الرجل",how:"حط فوطة بين الثلج والجلد، وارفع الرجل أعلى من مستوى القلب.",mis:"تحط الثلج على الجلد على طول.",q:"ice and elevation knee swelling"}
 };
 
+/* band needed per exercise: short = fabric hip band, long = long loop band */
+[["clam","short"],["bandwalk","short"],["seat_abd","short"],["stand_abd","short"],["spanish","long"],["tke","long"],["seat_ext","long"],["stand_ext","long"]].forEach(([k,b])=>LIB[k].band=b);
+LIB.bridge.how+=" ولو عايزه أصعب، لبّس أستك القماش فوق الركبتين وافتحهم شوية وانت فوق.";
+Object.assign(LIB,{
+ squat_iso:{n:"ثبات نص قعدة بأستك القماش",band:"short",how:"لبّس أستك القماش فوق الركبتين، وانزل نص قعدة (٤٥–٦٠°) ووزنك على الكعبين، وزق الركبتين لبرا ضد الأستك، وثبّت. بيقوّي وتر الركبة زي السكوات الإسباني لحد ما تجيب الأستك الطويل.",mis:"تنزل لـ ٩٠° أو أكتر، أو الركبتين يدخلوا لجوه.",q:"banded squat hold isometric"},
+ stand_quad:{n:"شد الفخذ وانت واقف",how:"اقف والركبة اليمين مثنية بسيط، وافردها للآخر بشد عضلة الفخذ، وثبّت ٥ ثواني. حط إيدك على الفخذ عشان تتأكد إنها شادة.",mis:"تزق وسطك لقدّام بدل ما تفرد الركبة.",q:"standing terminal knee extension no band"},
+ seat_ext_nb:{n:"فرد الركبة وانت قاعد (من غير أستك)",how:"اقعد وافرد الركبة ببطء لحد ما تتفرد، وثبّت ٣ ثواني فوق، وانزل في ٣ ثواني. لو بقى سهل، علّق شنطة فيها وزن خفيف على الكاحل.",mis:"تنزل بسرعة.",q:"seated knee extension exercise"},
+ stand_ext_nb:{n:"شد الرجل لورا (من غير أستك)",how:"اقف ماسك في المكتب، وشد رجلك اليمين لورا وهي مفرودة، وثبّت ثانيتين فوق، وضهرك مستقيم.",mis:"تقوّس ضهرك.",q:"standing hip extension exercise"}
+});
+const BAND_SUB={spanish:"squat_iso",tke:"stand_quad",seat_ext:"seat_ext_nb",stand_ext:"stand_ext_nb"};
+const BAND_LBL={short:"أستك قماش",long:"أستك طويل"};
+const hasLong=()=>S.band==="long"||S.band==="both";
+const hasShort=()=>S.band!=="long";
+function bandAdapt(items){return items.map(it=>{const b=LIB[it[0]]&&LIB[it[0]].band;
+  if(b==="long"&&!hasLong()&&BAND_SUB[it[0]]){const n=it.slice();n[0]=BAND_SUB[it[0]];n[4]=it[0];return n}
+  return it})}
 /* plan item: [id, dose text, hold/timer seconds] */
 const WARM={
- home:[["walk","٥ دقايق",300],["patella","دقيقتين",120],["heelslide","٢×١٥",0],["anklepump","٣٠ مرة",0]],
+ home:[["walk","٥ دقايق",300],["boxsquat","٢×١٠ · من غير وزن",0],["calf","٢×١٥",0]],
  gym:[["bike","٨–١٠ دقايق",600],["patella","دقيقتين",120],["heelslide","٢×١٥",0]]
 };
-const COOL=[["ham_st","٣×٣٠ ث",30],["calf_st","٣×٣٠ ث",30],["quad_st","٢×٣٠ ث",30],["ice","١٥ دقيقة (لو فيه ورم)",900]];
+const COOL=[["ham_st","٣×٣٠ ث",30],["calf_st","٣×٣٠ ث",30],["quad_st","٢×٣٠ ث",30],["ice","١٥ دقيقة (لو فيه وجع بعد التمرين)",900]];
 const W=t=>({w:1,top:t});
 const PHASES={
 1:{name:"تأسيس القوة",goal:"ترجّع القوة الأساسية للفخذ والسمانة والحوض بأوزان متوسطة ونزول بطيء، وتقوّي الأوتار بتمارين الثبات.",
@@ -319,6 +350,32 @@ const PHASES={
  gym:[["legpress","٤×٦–١٠ · وزن تقيل",0,W(10)],["sl_legpress","٤×٨–١٠",0,W(10)],["legext","٤×٨–١٠",0,W(10)],["hamcurl","٤×٨–١٠",0,W(10)],["rdl","٤×٦–٨",0,W(8)],["hipthrust","٤×٨–١٠",0,W(10)],["split","٤×٨–١٠ · بدامبلز",0,W(10)],["lat_stepdown","٣×١٢",0],["calfm","٤×٨–١٢",0,W(12)],["seatcalf","٤×١٢",0,W(12)]]}
 };
 const REST=[["walk","٢٠–٣٠ دقيقة",0]];
+/* Home program: two alternating days, each exercise has 4 levels [dose, timer] */
+const LV=(...a)=>({lv:a});
+const CALF_BENT=LV(["٣×١٥ · الرجلين",0],["٣×١٢ · رجل واحدة",0],["٣×١٥ · رجل واحدة",0],["٤×١٢ · رجل واحدة · بشنطة",0]);
+const HOME={
+A:{name:"يوم أ: الفخذ الأمامي والسمانة",items:[
+ ["spanish",LV(["٣×٣٠ ث",30],["٤×٤٥ ث",45],["٥×٤٥ ث",45],["٥×٦٠ ث",60])],
+ ["stepup",LV(["٣×١٠ · درجة سلم واحدة · نزول ٣ ث",0],["٣×١٠ · درجتين",0],["٣×١٢ · درجتين · شنطة ٥ كجم",0],["٤×١٠ · درجتين · شنطة ١٠ كجم",0])],
+ ["lat_stepdown",LV(["٣×٨ · درجة واحدة · ماسك الدرابزين",0],["٣×١٢ · درجة واحدة",0],["٤×١٠ · نزول في ٤ ث",0],["٤×١٠ · بشنطة ٥ كجم",0])],
+ ["split",LV(["٣×١٠ · نزول ربع المسافة",0],["٣×١٠ · نزول نص المسافة",0],["٣×١٢ · نص المسافة · شنطة ٥ كجم",0],["٤×١٠ · نص المسافة · شنطة ١٠ كجم",0])],
+ ["wallsit",LV(["٣×٣٠ ث · ٤٥–٦٠°",30],["٤×٤٥ ث",45],["٤×٦٠ ث",60],["٤×٢٠ ث · على اليمين بس",20])],
+ ["sl_calf",LV(["٣×١٥ · الرجلين على حافة السلم",0],["٣×١٢ · رجل واحدة",0],["٣×١٥ · رجل واحدة · انزل تحت مستوى الدرجة",0],["٤×١٢ · رجل واحدة · بشنطة",0])],
+ ["calf_bent",CALF_BENT]]},
+B:{name:"يوم ب: الخلفي والحوض والاتزان",items:[
+ ["sl_bridge",LV(["٣×١٥ · الرجلين · أستك القماش فوق الركبتين",0],["٣×١٠ · رجل واحدة",0],["٣×١٥ · رجل واحدة",0],["٣×١٢ · رجل واحدة · ضهرك على الكنبة",0])],
+ ["sl_rdl",LV(["٣×٨ · ماسك الحيطة",0],["٣×١٠ · من غير مسك",0],["٣×١٢ · شنطة في الإيد",0],["٤×١٠ · شنطة أتقل",0])],
+ ["slide_curl",LV(["٣×٨ · الرجلين · ارجع ببطء",0],["٣×١٠ · الرجلين",0],["٣×٦ · رجل واحدة",0],["٣×١٠ · رجل واحدة",0])],
+ ["bandwalk",LV(["٣×١٠ خطوة لكل اتجاه",0],["٣×١٥ خطوة",0],["٣×١٥ · نص قعدة أوطى",0],["٤×٢٠ خطوة",0])],
+ ["clam",LV(["٣×١٢",0],["٣×١٥",0],["٣×٢٠ · ثبات ثانيتين فوق",0],["٣×٢٠ · الأستك تحت الركبة بشوية",0])],
+ ["fwd_stepdown",LV(["٣×٨ · ماسك الدرابزين",0],["٣×١٠",0],["٣×١٢ · نزول في ٤ ث",0],["٤×١٠ · بشنطة",0])],
+ ["calf_bent",CALF_BENT],
+ ["balance2",LV(["٣×٣٠ ث · عينك مفتوحة",30],["٣×٤٥ ث · عينك مقفولة",45],["٣×٤٥ ث · على مخدة",45],["٣×٦٠ ث · على مخدة وانت بتحرك الرجل التانية",60])]]}
+};
+function homeItems(v){return HOME[v].items.map(([id,m])=>{const l=Math.min((S.lvl||{})[id]||0,m.lv.length-1);return [id,m.lv[l][0],m.lv[l][1],{lv:m.lv,lvl:l,key:id}]})}
+function homeVariant(){const k=todayKey();if(S.done[k]&&S.done[k].v)return S.done[k].v;
+  const prev=Object.keys(S.done).filter(d=>d<k&&S.done[d].v&&Object.values(S.done[d].ids||{}).some(Boolean)).sort().pop();
+  return prev&&S.done[prev].v==="A"?"B":"A"}
 /* office session: [id, dose, hold, lightOK] */
 const OFFICE={
 1:[["seat_quad","٢×١٠ · ثبات ٥ ث",5,1],["seat_abd","٢×١٥",0,1],["tke","٢×١٥ · الأستك في رجل المكتب",0,0],["stand_abd","٢×١٠",0,0],["calf","٢×١٥",0,1],["balance","٢×٢٠ ث · ماسك المكتب",20,1]],
@@ -328,7 +385,7 @@ const OFFICE={
 
 /* ============ State ============ */
 const KEY="rs-kneepro-v1";
-const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{},tests:{},office:{},wlog:{}});
+const DEF=()=>({v:1,phase:1,phaseStart:dk(new Date()),surgery:"",sched:{0:"gym",1:"home",2:"gym",3:"home",4:"gym",5:"rest",6:"home"},override:{},logs:{},done:{},checks:{},tests:{},office:{},wlog:{},band:"short",lvl:{},hlog:{}});
 let S;
 try{S=Object.assign(DEF(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=DEF()}
 const saveQuiet=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -337,11 +394,14 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
 
 /* ============ Domain logic ============ */
 const todayKey=()=>dk(new Date());
-function groupsFor(type,phase){
+function groupsFor(type,phase,hv){return groupsRaw(type,phase,hv).map(g=>Object.assign({},g,{items:bandAdapt(g.items)}))}
+function groupsRaw(type,phase,hv){
+  hv=hv||homeVariant();
   if(type==="rest")return [{t:"نشاط خفيف",id:"rest",items:REST},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
   if(type==="both"){const g=PHASES[phase].gym,ids=new Set(g.map(i=>i[0]));
-    return [{t:"إحماء",id:"warm",items:WARM.gym},{t:"التمارين الأساسية · جيم",id:"main",items:g},{t:"تمارين البيت الإضافية",id:"main2",items:PHASES[phase].home.filter(i=>!ids.has(i[0]))},{t:"إطالة وتهدئة",id:"cool",items:COOL}];}
-  return [{t:"إحماء",id:"warm",items:WARM[type]},{t:"التمارين الأساسية · "+(type==="gym"?"جيم":"بيت"),id:"main",items:PHASES[phase][type]},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
+    return [{t:"إحماء",id:"warm",items:WARM.gym},{t:"التمارين الأساسية · جيم",id:"main",items:g},{t:"تمارين البيت الإضافية · "+HOME[hv].name,id:"main2",items:homeItems(hv).filter(i=>!ids.has(i[0]))},{t:"إطالة وتهدئة",id:"cool",items:COOL}];}
+  if(type==="home")return [{t:"إحماء",id:"warm",items:WARM.home},{t:HOME[hv].name,id:"main",items:homeItems(hv)},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
+  return [{t:"إحماء",id:"warm",items:WARM.gym},{t:"التمارين الأساسية · جيم",id:"main",items:PHASES[phase].gym},{t:"إطالة وتهدئة",id:"cool",items:COOL}];
 }
 function isWorkout(key){const d=S.done[key];if(!d||d.t==="rest"||!d.total)return false;return Object.values(d.ids||{}).filter(Boolean).length/d.total>=0.7}
 function workoutsSince(start){return Object.keys(S.done).filter(k=>k>=start&&isWorkout(k)).length}
@@ -424,11 +484,25 @@ function exCard(it,interactive,doneMap,attr){attr=attr||"ex";
   const timerLbl=hold>=60?"⏱ "+ar(Math.round(hold/60))+" د":"⏱ "+ar(hold)+" ث";
   return `<div class="ex${c?" done":""}">
     ${interactive?`<input type="checkbox" data-${attr}="${id}" ${c?"checked":""} aria-label="${esc(x.n)}">`:`<span></span>`}
-    <div><div class="nm">${x.n}</div><div class="dose">${dose}</div><div class="how">${x.how}</div>
+    <div><div class="nm">${x.n}${x.band?` <span class="btag ${x.band}">${BAND_LBL[x.band]}</span>`:""}</div>${it[4]?`<div class="subnote">بديل لـ "${LIB[it[4]].n}" لحد ما تجيب الأستك الطويل</div>`:""}<div class="dose">${dose}</div><div class="how">${x.how}</div>
     ${x.mis?`<div class="mis">⚠ ${x.mis}</div>`:""}
     <div class="acts">${hold?`<button class="btn" type="button" data-timer="${hold}" data-lbl="${esc(x.n)}">${timerLbl}</button>`:""}
     ${interactive&&!hold?`<button class="btn" type="button" data-timer="60" data-lbl="راحة بين المجموعات">⏱ راحة ٦٠ ث</button>`:""}
-    <a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ فيديو</a></div>${interactive&&attr==="ex"&&meta&&meta.w?weightRow(id,meta.top):""}</div></div>`;
+    <a class="btn" href="${yt(x.n.replace(/\(.*?\)/g,"").trim()+" تمرين علاج طبيعي")}" target="_blank" rel="noopener">▶ فيديو عربي</a><a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ English</a></div>${interactive&&attr==="ex"&&meta&&meta.w?weightRow(id,meta.top):""}${meta&&meta.lv?levelRow(meta,interactive&&attr==="ex",c):""}</div></div>`;
+}
+function levelRow(m,live,done){
+  const n=m.lv.length,l=m.lvl,key=m.key;
+  if(!live)return `<ol class="lvlist">${m.lv.map((v,i)=>`<li${i===l?' class="cur"':""}>${v[0]}</li>`).join("")}</ol>`;
+  const H=((S.hlog||{})[key])||{},k=todayKey(),today=H[k];
+  const same=Object.keys(H).sort().filter(d=>H[d].lv===l).slice(-2);
+  const ready=l<n-1&&same.length===2&&same.every(d=>H[d].f==="easy");
+  const lp=S.logs[k]||S.logs[dk(addDays(new Date(),-1))];
+  const tooHard=l>0&&today&&today.f==="hard"&&lp&&lp.pain>=4;
+  return `<div class="lvrow"><span class="lvchip">المستوى ${ar(l+1)} من ${ar(n)}</span>
+    <button class="btn" type="button" data-lvd="${key}" ${l===0?"disabled":""}>أسهل</button><button class="btn" type="button" data-lvu="${key}" ${l===n-1?"disabled":""}>أصعب</button></div>
+    ${done?`<div class="fb"><span class="small muted">كان إيه؟</span>${[["easy","سهل"],["ok","مناسب"],["hard","صعب جدًا"]].map(([v,t])=>`<button type="button" data-fb="${key}" data-l="${l}" data-v="${v}" aria-pressed="${!!today&&today.lv===l&&today.f===v}">${t}</button>`).join("")}</div>`:""}
+    ${ready?`<div class="lvhint">عملته سهل مرتين. <b>جاهز للمستوى ${ar(l+2)}:</b> ${m.lv[l+1][0]} <button class="btn gold" type="button" data-lvu="${key}">انتقل</button></div>`:""}
+    ${tooHard?`<div class="lvhint warn">كان صعب جدًا والألم عالي. ارجع للمستوى ${ar(l)} كام مرة. <button class="btn" type="button" data-lvd="${key}">ارجع</button></div>`:""}`;
 }
 function weightRow(id,top){
   const k=todayKey(),L=(S.wlog||{})[id]||{},cur=L[k]||{};
@@ -449,10 +523,12 @@ function renderToday(){
   const planned=S.sched[dow],ov=S.override[k];
   let type=ov||planned,blocked=false;
   if(type==="both"&&light){type="gym";blocked=true}
-  const groups=groupsFor(type,S.phase);
+  const hv=homeVariant();
+  const groups=groupsFor(type,S.phase,hv);
   const all=groups.flatMap(g=>g.items.map(i=>i[0]));
   const uniq=[...new Set(all)];
-  if(!S.done[k]||S.done[k].t!==type)S.done[k]={t:type,ids:(S.done[k]&&S.done[k].ids)||{},total:uniq.length};
+  if(!S.done[k]||S.done[k].t!==type)S.done[k]={t:type,ids:(S.done[k]&&S.done[k].ids)||{},total:uniq.length,v:S.done[k]&&S.done[k].v};
+  if(type==="home"||type==="both")S.done[k].v=hv;
   S.done[k].total=uniq.length;
   const dm=S.done[k].ids,n=uniq.filter(i=>dm[i]).length;
   const logged=!!S.logs[k];
@@ -463,6 +539,7 @@ function renderToday(){
    <h2>${DAYS[dow]} · ${type==="rest"?"يوم راحة":type==="both"?"تمرين بيت + جيم":"تمرين "+TYPE_LBL[type]}</h2>
    <div class="muted small">المرحلة ${ar(S.phase)}: ${PHASES[S.phase].name}</div>
    <div class="banner ${adv.cls}"><b>${adv.t}</b>${adv.d}${!logged?`<div class="acts"><button class="btn primary" type="button" data-go="log">سجّل حالة النهارده</button></div>`:""}</div>
+   ${type==="home"||type==="both"?`<label class="f" style="margin-top:4px">تمرين البيت النهارده</label><div class="seg two" id="homeAB">${["A","B"].map(v=>`<button type="button" data-hv="${v}" aria-pressed="${hv===v}">${HOME[v].name.split(":")[0]}</button>`).join("")}</div><div class="muted small" style="margin-top:4px">أ وب بيتبدلوا لوحدهم كل يوم تمرين بيت.</div>`:""}
    <label class="f" style="margin-top:4px">تمرين النهارده</label>
    <div class="seg four" id="todayType">${["home","gym","both","rest"].map(t=>`<button type="button" data-tt="${t}" aria-pressed="${type===t}" ${t==="both"&&light?"disabled":""}>${TYPE_LBL[t]}</button>`).join("")}</div>
    ${ov&&ov!==planned?`<div class="small muted" style="margin-top:6px">غيّرت النهارده بس. الجدول الأسبوعي: ${TYPE_FULL[planned]} · <button class="linkbtn" type="button" id="resetType">ارجع للجدول</button></div>`:""}
@@ -612,7 +689,7 @@ let testOpen=false,swRun=null,officeOpen=false,officeIds={};
 function officeCard(light){
   const k=todayKey(),cnt=(S.office||{})[k]||0;
   const wk=Object.keys(S.office||{}).filter(x=>x>dk(addDays(new Date(),-7))).reduce((a,x)=>a+S.office[x],0);
-  const items=OFFICE[S.phase].filter(i=>!light||i[3]);
+  const items=bandAdapt(OFFICE[S.phase].filter(i=>!light||i[3]));
   const done=items.filter(i=>officeIds[i[0]]).length;
   return `<h3>جلسة مكتب</h3><div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
@@ -653,7 +730,7 @@ function testForm(){
      ${sw?`<button class="btn" type="button" data-sw="${k}${side}">⏱ ابدأ</button>`:""}</div>`).join("")}</div>`;
   return `<div class="stack" style="margin-top:12px">${TESTS.map((x,i)=>`<div class="tbox">
     <div class="nm">${ar(i+1)}. ${x.n}</div><div class="how">${x.how}</div>
-    <div class="acts"><a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ فيديو</a>${x.k==="step"?`<button class="btn" type="button" data-cd="1">⏱ عدّ ٣٠ ث</button>`:""}</div>
+    <div class="acts"><a class="btn" href="${yt(x.n.replace(/\(.*?\)/g,"").trim()+" اختبار علاج طبيعي")}" target="_blank" rel="noopener">▶ فيديو عربي</a><a class="btn" href="${yt(x.q)}" target="_blank" rel="noopener">▶ English</a>${x.k==="step"?`<button class="btn" type="button" data-cd="1">⏱ عدّ ٣٠ ث</button>`:""}</div>
     ${x.k==="wall"?`<div class="tpair one"><div><label class="small" for="tf_wall">الوقت بالثواني</label><input type="number" inputmode="numeric" id="tf_wall" placeholder="ث"><button class="btn" type="button" data-sw="wall">⏱ ابدأ</button></div></div>`
       :pair(x.k,x.u,x.k==="bal")}</div>`).join("")}
     <button class="btn gold block" type="button" id="tSave">حفظ نتيجة الاختبار</button>
@@ -679,15 +756,21 @@ let libF=0;
 function renderLibrary(){
   const sets=[];
   const add=(arr,tag)=>arr.forEach(i=>sets.push([i,tag]));
-  const ph=libF===0?[1,2,3]:[libF];
+  const ph=libF===0?[1,2,3]:libF<=3?[libF]:[];
   const seen={},rows=[];
   const pushList=(t,items)=>{const list=items.filter(i=>!seen[t+i[0]]&&(seen[t+i[0]]=1));if(list.length)rows.push(`<h3>${t}</h3><div class="stack">${list.map(i=>exCard(i,false,{})).join("")}</div>`)};
+  if(libF===4||libF===5){const b=libF===4?"short":"long";
+    const list=Object.keys(LIB).filter(k=>LIB[k].band===b).map(k=>[k,"",0]);
+    rows.push(`<p class="muted small">${b==="short"?"التمارين دي بتتعمل بأستك القماش القصير، ملبوس فوق الركبتين.":(hasLong()?"التمارين دي محتاجة أستك طويل، مربوط في رجل مكتب أو باب.":"التمارين دي محتاجة أستك طويل. لحد ما تجيبه، التطبيق بيبدّلها تلقائي بالبدائل اللي تحت.")}</p><div class="stack">${list.map(i=>exCard(i,false,{})).join("")}</div>`);
+    if(b==="long")rows.push(`<h3>البدائل من غير أستك طويل</h3><div class="stack">${Object.keys(BAND_SUB).map(k=>exCard([BAND_SUB[k],"",0,null,k],false,{})).join("")}</div>`);}
+  else{
   pushList("إحماء",[...WARM.home,...WARM.gym]);
-  ph.forEach(p=>{pushList("المرحلة "+ar(p)+" · بيت",PHASES[p].home);pushList("المرحلة "+ar(p)+" · جيم",PHASES[p].gym)});
+  if(libF===0){pushList("البيت · "+HOME.A.name,homeItems("A"));pushList("البيت · "+HOME.B.name,homeItems("B"))}
+  ph.forEach(p=>pushList("المرحلة "+ar(p)+" · جيم",PHASES[p].gym));
   ph.forEach(p=>pushList("المرحلة "+ar(p)+" · مكتب",OFFICE[p]));
-  pushList("إطالة وتهدئة",COOL);
+  pushList("إطالة وتهدئة",COOL);}
   $("v-library").innerHTML=`<h2>مكتبة التمارين</h2>
-   <div class="chips" id="libChips">${["الكل","مرحلة ١","مرحلة ٢","مرحلة ٣"].map((t,i)=>`<button type="button" data-f="${i}" aria-pressed="${libF===i}">${t}</button>`).join("")}</div>
+   <div class="chips" id="libChips">${["الكل","مرحلة ١","مرحلة ٢","مرحلة ٣","أستك قماش","أستك طويل"].map((t,i)=>`<button type="button" data-f="${i}" aria-pressed="${libF===i}">${t}</button>`).join("")}</div>
    ${rows.join("")}`;
   $("libChips").onclick=e=>{const b=e.target.closest("button");if(b){libF=+b.dataset.f;renderLibrary()}};
 }
@@ -698,6 +781,9 @@ function renderMore(){
    <div class="card" id="acctBox">${acctHTML()}</div>
    <h3>تاريخ العملية</h3>
    <div class="card"><input type="date" id="surg" value="${S.surgery}" max="${todayKey()}"><div class="muted small" style="margin-top:6px">بيظهر رقم الأسبوع بعد العملية في أعلى الشاشة.</div></div>
+   <h3>الأستك اللي عندك</h3>
+   <div class="card"><select id="bandSel" aria-label="الأستك اللي عندك">${[["short","أستك قماش قصير بس"],["long","أستك طويل بس"],["both","الاتنين"]].map(([v,t])=>`<option value="${v}" ${(S.band||"short")===v?"selected":""}>${t}</option>`).join("")}</select>
+    <div class="muted small" style="margin-top:6px">${hasLong()?"كل تمارين الأستك الطويل شغالة.":"التمارين اللي محتاجة أستك طويل (السكوات الإسباني، وفرد الركبة بالأستك، وشد الرجل لورا) بتتبدل تلقائي ببديل من غير أستك. لما تجيب الأستك الطويل، غيّر الاختيار ده."}</div></div>
    <h3>جدول الأسبوع</h3>
    <div class="card stack">${WEEK_ORDER.map(d=>`<div style="display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center"><span>${DAYS[d]}</span>
      <select data-sd="${d}" aria-label="${DAYS[d]}">${["home","gym","both","rest"].map(t=>`<option value="${t}" ${S.sched[d]===t?"selected":""}>${TYPE_FULL[t]}</option>`).join("")}</select></div>`).join("")}</div>
@@ -741,6 +827,7 @@ function renderMore(){
    <p class="muted small" style="margin-top:18px">RS KneePro · البرنامج إرشادي ومش بديل عن متابعة الدكتور وأخصائي العلاج الطبيعي.</p>`;
   bindAcct();
   $("surg").onchange=e=>{S.surgery=e.target.value;save();renderHeader()};
+  $("bandSel").onchange=e=>{S.band=e.target.value;save();toast("اتحفظ ✓");renderToday();renderMore()};
   $("v-more").querySelectorAll("[data-sd]").forEach(s=>s.onchange=()=>{S.sched[s.dataset.sd]=s.value;save();toast("الجدول اتحفظ ✓")});
   $("exp").onclick=()=>{const t=JSON.stringify(S);$("bk").value=t;$("copy").hidden=false;$("share").hidden=!navigator.share};
   $("copy").onclick=()=>{const t=$("bk").value;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast("اتنسخ ✓"),()=>{$("bk").select()}):$("bk").select()};
@@ -759,13 +846,15 @@ function prune(o){if(Array.isArray(o)){const x={};o.forEach((v,i)=>{if(v!=null)x
   if(o&&typeof o==="object"){const r={};Object.keys(o).sort().forEach(k=>{const v=prune(o[k]);if(v===undefined||v===null)return;if(typeof v==="object"&&!Object.keys(v).length)return;r[k]=v});return r}
   return o}
 const canon=o=>JSON.stringify(prune(JSON.parse(JSON.stringify(o))));
-function normalize(o){o=Object.assign(DEF(),prune(o||{}));["logs","done","tests","office","override","checks","wlog"].forEach(f=>{o[f]=o[f]||{}});
+function normalize(o){o=Object.assign(DEF(),prune(o||{}));["logs","done","tests","office","override","checks","wlog","lvl","hlog"].forEach(f=>{o[f]=o[f]||{}});
   Object.keys(o.done).forEach(k=>{o.done[k].ids=o.done[k].ids||{}});return o}
 function merge(a,b){
   const newer=(!!a.synced!==!!b.synced)?(a.synced?a:b):((a.updatedAt||0)>=(b.updatedAt||0)?a:b),older=newer===a?b:a;
   const out=JSON.parse(JSON.stringify(newer));
   ["logs","tests","override"].forEach(f=>{out[f]=out[f]||{};Object.keys(older[f]||{}).forEach(k=>{if(!(k in out[f]))out[f][k]=older[f][k]})});
   out.checks=out.checks||{};Object.keys(older.checks||{}).forEach(p=>{out.checks[p]=Object.assign({},older.checks[p],out.checks[p]||{})});
+  out.hlog=out.hlog||{};Object.keys(older.hlog||{}).forEach(id=>{out.hlog[id]=Object.assign({},older.hlog[id],out.hlog[id]||{})});
+  out.lvl=Object.assign({},older.lvl||{},out.lvl||{});
   out.wlog=out.wlog||{};Object.keys(older.wlog||{}).forEach(id=>{out.wlog[id]=Object.assign({},older.wlog[id],out.wlog[id]||{})});
   out.office=out.office||{};Object.keys(older.office||{}).forEach(k=>{out.office[k]=Math.max(out.office[k]||0,older.office[k]||0)});
   out.done=out.done||{};Object.keys(older.done||{}).forEach(k=>{const o=older.done[k];if(!out.done[k]){out.done[k]=o;return}
@@ -864,6 +953,9 @@ $("v-today").addEventListener("change",e=>{
 $("v-today").addEventListener("click",e=>{
   const tt=e.target.closest("[data-tt]");
   if(tt&&!tt.disabled){S.override=S.override||{};const k=todayKey();if(tt.dataset.tt===S.sched[new Date().getDay()])delete S.override[k];else S.override[k]=tt.dataset.tt;save();renderToday();return}
+  const lu=e.target.closest("[data-lvu],[data-lvd]");if(lu&&!lu.disabled){const key=lu.dataset.lvu||lu.dataset.lvd;S.lvl=S.lvl||{};S.lvl[key]=Math.max(0,(S.lvl[key]||0)+(lu.dataset.lvu?1:-1));save();toast("المستوى اتغير ✓");renderToday();return}
+  const fb=e.target.closest("[data-fb]");if(fb){const key=fb.dataset.fb;S.hlog=S.hlog||{};S.hlog[key]=S.hlog[key]||{};S.hlog[key][todayKey()]={lv:+fb.dataset.l,f:fb.dataset.v};save();renderToday();return}
+  const hb=e.target.closest("[data-hv]");if(hb){const k=todayKey();if(S.done[k])S.done[k].v=hb.dataset.hv;save();renderToday();return}
   if(e.target.id==="officeToggle"){officeOpen=!officeOpen;renderToday();return}
   if(e.target.id==="officeDone"){const k=todayKey();S.office=S.office||{};S.office[k]=(S.office[k]||0)+1;officeIds={};officeOpen=false;save();toast("جلسة المكتب اتسجلت ✓");renderToday();return}
   if(e.target.id==="resetType"){delete S.override[todayKey()];save();renderToday();return}
@@ -879,6 +971,7 @@ function show(v){
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.v));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderHeader();renderToday()}});
 
+if(!S.homeFirst){S.sched={0:"home",1:"home",2:"home",3:"home",4:"home",5:"rest",6:"home"};S.homeFirst=true;save()}
 renderAll();
 if(!syncSkipped&&!knownUser)showLogin();
 setSync();
